@@ -278,4 +278,10 @@ app.post('/admin/delete-stat', (req, res) => {
     res.redirect('/admin');
 });
 
-app.listen(3000, () => console.log("VIM Hub Active: http://localhost:3000"));
+
+// Render provides the port via process.env.PORT. Default to 3000 for local testing.
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`VIM Hub is LIVE on port ${PORT}`);
+});
