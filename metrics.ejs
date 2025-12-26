@@ -1,0 +1,73 @@
+<%- include('partials/navbar') %>
+<main class="max-w-7xl mx-auto px-10 py-20">
+    <div class="mb-20">
+        <h1 class="text-6xl font-black italic uppercase tracking-tighter mb-4 text-white">LEAGUE <span class="text-blue-500">METRICS</span></h1>
+        <p class="opacity-50 uppercase tracking-[0.5em] text-xs font-bold text-white">Live Statistics and Standings</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-12 mb-20">
+        <% if (groups && groups.length > 0) { %>
+            <% groups.forEach(group => { %>
+                <div class="glass p-8 rounded-[30px] border border-white/5 overflow-hidden">
+                    <h2 class="text-xl font-bold uppercase italic mb-8 text-blue-500 tracking-widest"><%= group.name %></h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-[10px] uppercase opacity-40 border-b border-white/10 text-white">
+                                    <th class="pb-6 px-4">Team</th>
+                                    <th class="pb-6 text-center">MP</th>
+                                    <th class="pb-6 text-center">Wins</th>
+                                    <th class="pb-6 text-center">Loses</th>
+                                    <th class="pb-6 text-right px-4">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-white">
+                                <% group.teams.forEach((team, index) => { %>
+                                    <tr class="hover:bg-white/[0.02] transition">
+                                        <td class="py-5 px-4 flex items-center gap-4">
+                                            <img src="<%= team.logo %>" class="w-8 h-8 object-contain">
+                                            <a href="/team/<%= group.id %>/<%= index %>" class="font-black text-sm uppercase hover:text-blue-500 transition cursor-pointer">
+                                                <%= team.name %>
+                                            </a>
+                                        </td>
+                                        <td class="py-5 text-center text-sm font-bold opacity-80"><%= team.mp || 0 %></td>
+                                        <td class="py-5 text-center text-sm font-bold text-green-500"><%= team.wins || 0 %></td>
+                                        <td class="py-5 text-center text-sm font-bold text-red-500"><%= team.loses || 0 %></td>
+                                        <td class="py-5 text-right px-4 font-black text-blue-500 text-lg"><%= team.pts || 0 %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="glass p-20 rounded-[30px] border border-white/5 text-center">
+                <p class="opacity-20 text-[10px] uppercase font-bold tracking-widest text-white">No standings tables created yet</p>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <% ['scorers', 'saves', 'assists'].forEach(type => { %>
+            <div class="glass p-8 rounded-[30px] border border-white/5 text-white">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-8 text-blue-500 text-center">TOP <%= type.toUpperCase() %></h3>
+                <div class="space-y-4">
+                    <% if(leaderboards && leaderboards[type] && leaderboards[type].length > 0) { %>
+                        <% leaderboards[type].slice(0, 10).forEach((player, index) => { %>
+                            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-[10px] opacity-30 font-bold">#<%= index + 1 %></span>
+                                    <span class="text-xs font-bold uppercase tracking-tight"><%= player.name %></span>
+                                </div>
+                                <span class="text-sm font-black text-white"><%= player.value %></span>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-[9px] opacity-20 text-center uppercase font-bold py-4">Waiting for data</p>
+                    <% } %>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</main>

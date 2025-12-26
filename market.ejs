@@ -1,0 +1,164 @@
+<%- include('partials/navbar') %>
+<style>
+    @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    
+    .animate-conveyor { display: flex; animation: scroll 30s linear infinite; width: max-content; }
+    .animate-conveyor:hover { animation-play-state: paused; }
+    .player-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+    .player-card:hover { transform: scale(1.08); z-index: 10; border-color: rgba(59, 130, 246, 0.5); }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+    
+    /* Live Log Styles - Preserved from previous suggestion */
+    .log-entry { animation: slideIn 0.5s ease forwards; background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent); border-left: 3px solid #3b82f6; }
+</style>
+
+<% if (typeof error !== 'undefined' && error) { %>
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-red-600 text-white px-10 py-5 rounded-[30px] font-black uppercase italic shadow-[0_20px_50px_rgba(220,38,38,0.5)] border-2 border-white/20 animate-bounce">
+        ⚠️ <%= error %>
+    </div>
+<% } %>
+
+<main class="py-20 overflow-hidden">
+    <div class="max-w-[1600px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-4 gap-12">
+        
+        <div class="lg:col-span-3">
+            <h2 class="text-4xl font-black italic mb-16 uppercase tracking-tighter text-blue-500">PLAYER MARKET</h2>
+
+            <% if(players.length > 0) { %>
+                <div class="relative flex items-center mb-32">
+                    <div class="animate-conveyor gap-8 px-4">
+                        <% let displayList = players.length < 5 ? [...players, ...players, ...players] : [...players, ...players]; %>
+                        <% displayList.forEach(p => { %>
+                            <div class="player-card w-[300px] h-[400px] glass rounded-3xl overflow-hidden flex-shrink-0 relative group" 
+                                 onclick="openBio('<%= p.name %>', '<%= p.image || p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>')">
+                                <img src="<%= p.image || p.cardImage %>" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent p-8 flex flex-col justify-end">
+                                    <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
+                                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Click for Stats & Bio</p>
+                                </div>
+                            </div>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="text-center py-24 opacity-20 italic uppercase tracking-[0.5em] text-sm text-white">Register below to be featured in the market</div>
+            <% } %>
+
+            <div class="max-w-xl mx-auto glass p-12 rounded-[40px] shadow-2xl border-white/10">
+                <% if (user) { %>
+                    <div class="text-center space-y-6">
+                        <% if (!user.verified) { %>
+                            <div class="bg-yellow-600/10 border border-yellow-500/30 p-6 rounded-3xl mb-4 animate-pulse">
+                                <p class="text-yellow-500 text-xs font-black uppercase italic tracking-widest mb-1">⚠️ Profile Pending Review</p>
+                                <p class="text-[10px] text-white opacity-60 uppercase font-bold">A staff member must approve your profile before you appear on the public market.</p>
+                            </div>
+                        <% } %>
+
+                        <div class="w-20 h-20 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-3xl font-black text-blue-500 italic"><%= user.name.charAt(0) %></span>
+                        </div>
+                        <h3 class="text-2xl font-black italic uppercase text-white">Welcome back, <span class="text-blue-500"><%= user.name %></span></h3>
+                        <p class="text-xs font-bold opacity-40 uppercase tracking-widest text-white">
+                            <%= user.verified ? 'Your card is currently active in the market.' : 'Your card is hidden until approved.' %>
+                        </p>
+                        <div class="pt-4 space-y-3">
+                            <a href="/profile" class="block w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">Manage My Profile</a>
+                            <form action="/profile/delete" method="POST" onsubmit="return confirm('Delete your market profile? You will need to register again to appear in the market.')">
+                                <button type="submit" class="w-full bg-red-600/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-600 hover:text-white transition">Delete & Leave Market</button>
+                            </form>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <h3 class="text-2xl font-black italic mb-8 uppercase text-center text-white">Register as a Free-Agent</h3>
+                    <form action="/register" method="POST" class="space-y-6">
+                        <input name="name" placeholder="Roblox Username" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition text-white">
+                        <input name="discord" placeholder="Discord Username (e.g. user_123)" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition text-white">
+                        <textarea name="experience" placeholder="Tell us about your past experience / Bio..." required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none h-40 focus:border-blue-500 transition text-white"></textarea>
+                        <input name="image" placeholder="Portrait Image URL" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 transition text-white">
+                        <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">SUBMIT TO MARKET</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 hidden lg:block border-l border-white/5 pl-8">
+            <h3 class="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6">Live Activity Log</h3>
+            <div class="space-y-4">
+                <% 
+                    const dialogues = [
+                        "has been cleared for market entry!",
+                        "is officially a Free Agent!",
+                        "is looking for a contract!",
+                        "has just joined the scouting pool!",
+                        "is now available for signing!"
+                    ];
+
+                    // Shows last 8 approved players in the log
+                    let recentApprovals = players.filter(p => p.verified).slice(-8).reverse();
+                    
+                    if(recentApprovals.length > 0) { 
+                        recentApprovals.forEach((log, index) => { 
+                            let randomMsg = dialogues[Math.floor(Math.random() * dialogues.length)];
+                %>
+                    <div class="log-entry p-4 rounded-r-2xl" style="animation-delay: <%= index * 0.1 %>s">
+                        <p class="text-[9px] font-black text-blue-500 uppercase italic mb-1">Breaking Update</p>
+                        <p class="text-sm text-white font-bold leading-tight">
+                            <%= log.name %> <span class="text-white/40 font-medium lowercase italic"><%= randomMsg %></span>
+                        </p>
+                    </div>
+                <% }) } else { %>
+                    <p class="text-[10px] uppercase text-white/20 italic">Awaiting market movements...</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div id="bioModal" class="modal" onclick="closeBio()">
+        <div class="glass max-w-4xl w-full rounded-[40px] p-8 md:p-12 flex flex-col md:flex-row gap-10 border-white/10" onclick="event.stopPropagation()">
+            <img id="modalImg" src="" class="w-full md:w-1/3 aspect-[3/4] object-cover rounded-2xl shadow-2xl">
+            <div class="flex-1">
+                <h2 id="modalName" class="text-5xl font-black italic uppercase text-blue-500 mb-2"></h2>
+                <p id="modalDiscord" class="text-blue-300 font-bold text-sm mb-6 uppercase tracking-widest"></p>
+                
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5">
+                        <p class="text-[8px] uppercase font-black opacity-40 text-white">Goals</p>
+                        <p id="mGoals" class="text-xl font-black italic text-white">0</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5">
+                        <p class="text-[8px] uppercase font-black opacity-40 text-white">Ast</p>
+                        <p id="mAssists" class="text-xl font-black italic text-white">0</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl text-center border border-white/5">
+                        <p class="text-[8px] uppercase font-black opacity-40 text-white">Sav</p>
+                        <p id="mSaves" class="text-xl font-black italic text-white">0</p>
+                    </div>
+                    <div class="bg-blue-600/20 p-4 rounded-2xl text-center border border-blue-500/30">
+                        <p class="text-[8px] uppercase font-black text-blue-400">MVP</p>
+                        <p id="mMvps" class="text-xl font-black italic text-blue-500">0</p>
+                    </div>
+                </div>
+
+                <p class="text-[10px] uppercase tracking-widest opacity-40 mb-2 text-white">Experience & Bio</p>
+                <div id="modalBio" class="text-gray-300 leading-relaxed text-lg max-h-48 overflow-y-auto pr-4 italic"></div>
+                <button onclick="closeBio()" class="mt-8 bg-white/10 hover:bg-white/20 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition text-white">Close View</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function openBio(name, img, bio, discord, g, a, s, m) {
+        document.getElementById('modalName').innerText = name;
+        document.getElementById('modalImg').src = img;
+        document.getElementById('modalBio').innerText = bio;
+        document.getElementById('modalDiscord').innerText = "Discord: " + discord;
+        document.getElementById('mGoals').innerText = g;
+        document.getElementById('mAssists').innerText = a;
+        document.getElementById('mSaves').innerText = s;
+        document.getElementById('mMvps').innerText = m;
+        document.getElementById('bioModal').style.display = 'flex';
+    }
+    function closeBio() { document.getElementById('bioModal').style.display = 'none'; }
+</script>

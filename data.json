@@ -1,0 +1,27 @@
+{
+  "players": [
+    {
+      "id": 1766743643807,
+      "name": "Nexterious",
+      "discord": "officialnex",
+      "experience": "Test",
+      "image": "https://media.discordapp.net/attachments/1439616353421099219/1454044142664548496/Nex_2_1.png?ex=694fa7a2&is=694e5622&hm=3f23a481287edff6f21df59d3862d9c0264505414ce21f0b117526fbd03a96af&=&format=webp&quality=lossless&width=587&height=764",
+      "goals": 0,
+      "assists": 0,
+      "saves": 0,
+      "mvps": 0,
+      "bio": "",
+      "cardImage": "https://media.discordapp.net/attachments/1439616353421099219/1454044142664548496/Nex_2_1.png?ex=694fa7a2&is=694e5622&hm=3f23a481287edff6f21df59d3862d9c0264505414ce21f0b117526fbd03a96af&=&format=webp&quality=lossless&width=587&height=764",
+      "verified": true
+    }
+  ],
+  "matches": [],
+  "liveLink": "",
+  "groups": [],
+  "leaderboards": {
+    "scorers": [],
+    "saves": [],
+    "assists": []
+  },
+  "records": []
+}

@@ -1,0 +1,271 @@
+<%- include('partials/navbar') %>
+<main class="py-20 px-6 max-w-7xl mx-auto space-y-12">
+    <h2 class="text-5xl font-black italic uppercase tracking-tighter text-white">ADMIN <span class="text-blue-500">DASHBOARD</span></h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[30px] space-y-8">
+            <form action="/admin/live" method="POST" class="space-y-4">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Live Stream Link</h3>
+                <input name="link" value="<%= liveLink %>" placeholder="YouTube Link" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
+                <button type="submit" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase text-xs text-white">Update Live</button>
+            </form>
+
+            <form action="/admin/add-match" method="POST" class="space-y-4 text-white">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Schedule Match</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <input name="teamA" placeholder="Team 1" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="logoA" placeholder="Logo 1 URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="teamB" placeholder="Team 2" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="logoB" placeholder="Logo 2 URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                </div>
+                <input name="time" placeholder="Match Time (e.g. 18:00)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
+                <button type="submit" class="w-full bg-white text-black py-4 rounded-2xl font-bold uppercase text-xs">Post Match</button>
+            </form>
+        </div>
+
+        <div class="glass p-8 rounded-[30px]">
+            <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest mb-6 text-white">Quick Player Remove</h3>
+            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                <% players.forEach(p => { %>
+                    <div class="flex justify-between items-center bg-white/5 p-4 rounded-2xl text-white border border-white/5">
+                        <span class="font-bold text-sm uppercase"><%= p.name %></span>
+                        <form action="/admin/delete-player" method="POST">
+                            <input type="hidden" name="playerId" value="<%= p.id %>">
+                            <button type="submit" class="text-red-500 font-bold text-[10px] uppercase">Remove</button>
+                        </form>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass p-10 rounded-[40px] border border-yellow-500/20">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl font-black italic uppercase text-yellow-500">Review Queue</h2>
+                <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest">Awaiting verification before market listing</p>
+            </div>
+            <input type="text" onkeyup="filterQueue(this)" placeholder="SEARCH QUEUE..." class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[10px] text-white outline-none w-full md:w-64 focus:border-yellow-500 transition-all">
+        </div>
+
+        <div class="space-y-3" id="queueList">
+            <% let pending = players.filter(p => !p.verified); %>
+            <% if (pending.length > 0) { %>
+                <% pending.forEach(player => { %>
+                    <details class="queue-card group bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-yellow-500/30 transition-all">
+                        <summary class="p-5 cursor-pointer flex items-center justify-between list-none">
+                            <div class="flex items-center gap-4">
+                                <img src="<%= player.image || player.cardImage %>" class="w-10 h-10 rounded-full object-cover border border-white/10 shadow-xl">
+                                <div>
+                                    <p class="font-black text-white uppercase italic text-sm"><%= player.name %></p>
+                                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-tighter"><%= player.discord %></p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-[10px] font-black uppercase text-yellow-500/50 group-open:hidden">View Bio & Stats ↓</span>
+                                <span class="text-[10px] font-black uppercase text-white/20 hidden group-open:block">Collapse ↑</span>
+                            </div>
+                        </summary>
+                        
+                        <div class="p-8 bg-black/40 border-t border-white/5">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                                <div class="space-y-2">
+                                    <p class="text-[10px] font-black uppercase text-white/40 tracking-widest">Player Bio</p>
+                                    <div class="bg-white/5 p-4 rounded-xl text-xs text-white/80 italic leading-relaxed border border-white/5">
+                                        "<%= player.experience || player.bio %>"
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-3">
+                                    <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5">
+                                        <p class="text-[9px] font-bold uppercase opacity-30 text-white">Goals</p>
+                                        <p class="text-lg font-black text-white"><%= player.goals || 0 %></p>
+                                    </div>
+                                    <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5">
+                                        <p class="text-[9px] font-bold uppercase opacity-30 text-white">Assists</p>
+                                        <p class="text-lg font-black text-white"><%= player.assists || 0 %></p>
+                                    </div>
+                                    <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5">
+                                        <p class="text-[9px] font-bold uppercase opacity-30 text-white">Saves</p>
+                                        <p class="text-lg font-black text-white"><%= player.saves || 0 %></p>
+                                    </div>
+                                    <div class="bg-blue-600/10 p-4 rounded-xl text-center border border-blue-500/20">
+                                        <p class="text-[9px] font-bold uppercase text-blue-400">MVPs</p>
+                                        <p class="text-lg font-black text-blue-400"><%= player.mvps || 0 %></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <form action="/admin/approve-player" method="POST" class="flex-1">
+                                    <input type="hidden" name="playerId" value="<%= player.id %>">
+                                    <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-xl text-xs font-black uppercase text-white transition shadow-lg shadow-green-600/20">Approve to Market</button>
+                                </form>
+                                <form action="/admin/delete-player" method="POST">
+                                    <input type="hidden" name="playerId" value="<%= player.id %>">
+                                    <button type="submit" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-8 py-4 rounded-xl text-xs font-black uppercase transition border border-red-500/20">Reject</button>
+                                </form>
+                            </div>
+                        </div>
+                    </details>
+                <% }) %>
+            <% } else { %>
+                <div class="py-12 text-center bg-white/[0.02] rounded-3xl border border-dashed border-white/10">
+                    <p class="text-xs opacity-20 uppercase font-black tracking-[0.5em] text-white">No registrations pending</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="glass p-10 rounded-[30px] space-y-10">
+        <div class="flex justify-between items-center border-b border-white/5 pb-6">
+            <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white text-blue-500">League Tables & Rosters</h3>
+            <form action="/admin/add-group" method="POST" class="flex gap-2">
+                <input name="name" placeholder="New Table Name" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs text-white">
+                <button type="submit" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-white">Create Table</button>
+            </form>
+        </div>
+
+        <% groups.forEach(group => { %>
+            <div class="space-y-8 p-6 border border-white/5 rounded-[40px] bg-white/[0.02]">
+                <div class="flex justify-between items-center">
+                    <h4 class="text-blue-500 font-black italic uppercase text-xl"><%= group.name %></h4>
+                    <form action="/admin/delete-group" method="POST">
+                        <input type="hidden" name="groupId" value="<%= group.id %>">
+                        <button type="submit" class="text-red-500 text-[9px] font-bold border border-red-500/30 px-3 py-1 rounded-full uppercase">Delete Whole Table</button>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <% group.teams.forEach((team, index) => { %>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
+                            <form action="/admin/update-team" method="POST" class="grid grid-cols-2 md:grid-cols-7 gap-3 items-center text-white">
+                                <input type="hidden" name="groupId" value="<%= group.id %>">
+                                <input type="hidden" name="teamIndex" value="<%= index %>">
+                                <div class="flex items-center gap-2 px-2">
+                                    <img src="<%= team.logo %>" class="w-5 h-5 object-contain">
+                                    <span class="font-bold text-xs truncate w-24"><%= team.name %></span>
+                                </div>
+                                <div class="flex flex-col text-[8px] opacity-40">MP<input name="mp" type="number" value="<%= team.mp || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none"></div>
+                                <div class="flex flex-col text-[8px] opacity-40">W<input name="wins" type="number" value="<%= team.wins || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none"></div>
+                                <div class="flex flex-col text-[8px] opacity-40">L<input name="loses" type="number" value="<%= team.loses || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none"></div>
+                                <div class="flex flex-col text-[8px] opacity-40 text-blue-400">PTS<input name="pts" type="number" value="<%= team.pts || 0 %>" class="bg-black/40 rounded p-1 text-blue-400 text-center border-none"></div>
+                                <button type="submit" class="bg-blue-600 py-2 rounded-xl text-[8px] font-bold uppercase">Update Stats</button>
+                                <button type="submit" formaction="/admin/delete-team" class="bg-red-500/10 text-red-500 py-2 rounded-xl text-[8px] font-bold uppercase">Delete Team</button>
+                            </form>
+                            <div class="bg-black/20 p-4 rounded-2xl space-y-4">
+                                <p class="text-[9px] font-black uppercase tracking-widest opacity-30">Team Roster</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <% (team.roster || []).forEach((player, pIdx) => { %>
+                                        <div class="bg-white/5 px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/5">
+                                            <span class="text-[10px] uppercase <%= player.isManager ? 'text-blue-400 font-black' : 'text-white' %>">
+                                                <%= player.isManager ? 'MGR:' : '' %> <%= player.name %>
+                                            </span>
+                                            <form action="/admin/delete-from-roster" method="POST">
+                                                <input type="hidden" name="groupId" value="<%= group.id %>">
+                                                <input type="hidden" name="teamIndex" value="<%= index %>">
+                                                <input type="hidden" name="playerIndex" value="<%= pIdx %>">
+                                                <button type="submit" class="text-red-500 font-bold hover:scale-125 transition">×</button>
+                                            </form>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                                <form action="/admin/add-to-roster" method="POST" class="flex gap-2">
+                                    <input type="hidden" name="groupId" value="<%= group.id %>">
+                                    <input type="hidden" name="teamIndex" value="<%= index %>">
+                                    <input name="playerName" required placeholder="Player Name" class="bg-black/40 p-2 rounded-xl text-[10px] flex-1 text-white outline-none">
+                                    <select name="isManager" class="bg-black/40 p-2 rounded-xl text-[10px] text-white outline-none">
+                                        <option value="false">Player</option>
+                                        <option value="true">Manager</option>
+                                    </select>
+                                    <button type="submit" class="bg-white/10 px-4 rounded-xl text-[9px] font-black uppercase text-white hover:bg-white/20 transition">Add To Squad</button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                    <form action="/admin/update-team" method="POST" class="grid grid-cols-3 gap-2 p-6 border border-dashed border-white/10 rounded-3xl">
+                        <input type="hidden" name="groupId" value="<%= group.id %>">
+                        <input name="teamName" placeholder="Team Name" class="bg-white/5 p-3 rounded-xl text-xs text-white outline-none">
+                        <input name="logo" placeholder="Logo URL" class="bg-white/5 p-3 rounded-xl text-xs text-white outline-none">
+                        <button type="submit" class="bg-white/10 text-white text-[10px] font-bold uppercase rounded-xl">Add New Team</button>
+                    </form>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <div class="glass p-10 rounded-[40px] border border-white/5 mb-12">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-black italic uppercase text-blue-500">Live Market Database</h2>
+            <input type="text" id="playerSearch" onkeyup="filterPlayers()" placeholder="SEARCH ACTIVE PLAYERS..." 
+            class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[10px] text-white outline-none w-1/3 focus:border-blue-500 transition-all">
+        </div>
+        
+        <div class="space-y-4" id="playerList">
+            <% players.filter(p => p.verified).forEach(player => { %>
+                <details class="player-card group bg-white/[0.02] border border-white/5 rounded-3xl overflow-hidden" data-name="<%= player.name.toLowerCase() %>">
+                    <summary class="p-6 cursor-pointer flex justify-between items-center hover:bg-white/[0.05] transition-all list-none">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center font-black italic text-blue-500">
+                                <%= player.name.charAt(0) %>
+                            </div>
+                            <div>
+                                <p class="font-black uppercase italic tracking-tight text-white"><%= player.name %></p>
+                                <p class="text-[10px] opacity-30 font-bold uppercase tracking-widest text-white"><%= player.discord %></p>
+                            </div>
+                        </div>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform font-black">↓</span>
+                    </summary>
+                    
+                    <div class="p-8 border-t border-white/5 bg-black/20 text-white">
+                        <form action="/admin/update-market-player" method="POST" class="space-y-6">
+                            <input type="hidden" name="playerId" value="<%= player.id %>">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div>
+                                    <label class="text-[10px] uppercase font-black opacity-40 mb-2 block tracking-widest">Goals</label>
+                                    <input type="number" name="goals" value="<%= player.goals %>" class="w-full bg-black border border-white/10 rounded-xl p-3 text-sm focus:border-blue-500 outline-none text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase font-black opacity-40 mb-2 block tracking-widest">Assists</label>
+                                    <input type="number" name="assists" value="<%= player.assists %>" class="w-full bg-black border border-white/10 rounded-xl p-3 text-sm focus:border-blue-500 outline-none text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase font-black opacity-40 mb-2 block tracking-widest">Saves</label>
+                                    <input type="number" name="saves" value="<%= player.saves %>" class="w-full bg-black border border-white/10 rounded-xl p-3 text-sm focus:border-blue-500 outline-none text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase font-black text-blue-400 mb-2 block tracking-widest">MVPs</label>
+                                    <input type="number" name="mvps" value="<%= player.mvps || 0 %>" class="w-full bg-black border border-blue-500/30 rounded-xl p-3 text-sm focus:border-blue-500 outline-none text-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase font-black opacity-40 mb-2 block tracking-widest">Bio Content</label>
+                                <textarea name="bio" rows="3" class="w-full bg-black border border-white/10 rounded-xl p-4 text-sm focus:border-blue-500 outline-none text-white"><%= player.experience || player.bio %></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase text-[10px] tracking-[0.3em] transition-all text-white">Update Market Stats</button>
+                        </form>
+                    </div>
+                </details>
+            <% }) %>
+        </div>
+    </div>
+</main>
+
+<script>
+    function filterPlayers() {
+        let input = document.getElementById('playerSearch').value.toLowerCase();
+        let cards = document.getElementsByClassName('player-card');
+        for (let i = 0; i < cards.length; i++) {
+            let name = cards[i].getAttribute('data-name');
+            cards[i].style.display = name.includes(input) ? "" : "none";
+        }
+    }
+
+    function filterQueue(input) {
+        let val = input.value.toLowerCase();
+        let cards = document.getElementsByClassName('queue-card');
+        for (let card of cards) {
+            let text = card.innerText.toLowerCase();
+            card.style.display = text.includes(val) ? "" : "none";
+        }
+    }
+</script>

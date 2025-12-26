@@ -1,0 +1,25 @@
+<%- include('partials/navbar') %>
+
+<div style="background: #050505; color: white; min-height: 80vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
+    <div style="background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center;">
+        
+        <h2 style="margin-bottom: 10px; text-transform: uppercase; font-style: italic;">STAFF <span style="color: #3b82f6;">LOGIN</span></h2>
+        <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 25px;">RESTRICTED AREA</p>
+
+        <% if (error) { %>
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 15px; border-radius: 10px; font-size: 12px; margin-bottom: 20px; line-height: 1.5;">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <form action="/admin-login" method="POST">
+            <input type="password" name="password" placeholder="Enter Security Key" required 
+                   style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #000; color: white; text-align: center; outline: none;">
+            
+            <button type="submit" 
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2563eb; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;">
+                Access Dashboard
+            </button>
+        </form>
+    </div>
+</div>

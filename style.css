@@ -1,0 +1,70 @@
+:root {
+    --primary: #00f2ff; /* Neon Blue */
+    --secondary: #7000ff; /* Purple */
+    --bg: #0b0b0e;
+    --card-bg: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at top right, #1a1a2e, #0b0b0e);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Card Style */
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+/* Professional Navbar */
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    background: rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid var(--primary);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary);
+}
+
+/* The Ticker (Rating Bar) */
+.ticker-wrap {
+    background: linear-gradient(90deg, var(--secondary), var(--primary));
+    padding: 8px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+/* Match Buttons */
+.btn-join {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-join:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--primary);
+}

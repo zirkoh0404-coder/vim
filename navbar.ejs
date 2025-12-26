@@ -1,0 +1,49 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+    body { background-color: #050505; font-family: 'Inter', sans-serif; color: white; }
+    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+</style>
+
+<nav class="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        
+        <a href="/" class="flex items-center gap-3 shrink-0 group">
+            <div class="relative flex items-center justify-center">
+                <img src="https://i.postimg.cc/mD8Z8B7v/VIMSL.png" 
+                     alt="VIMSL" 
+                     id="navbar-logo"
+                     class="h-9 w-auto object-contain transition-opacity duration-300"
+                     onerror="this.style.display='none'; document.getElementById('logo-placeholder').classList.remove('hidden');">
+                
+                <div id="logo-placeholder" class="hidden w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center font-black italic text-white text-lg">
+                    V
+                </div>
+            </div>
+            
+            <span class="text-xl font-black italic tracking-tighter text-white uppercase whitespace-nowrap">
+                VIM <span class="text-blue-500">SUPER LEAGUE</span>
+            </span>
+        </a>
+        
+        <div class="hidden md:flex items-center gap-8">
+            <% 
+                const currentPage = (typeof page !== 'undefined') ? page : ''; 
+                const getStyle = (p) => (currentPage === p) ? 'text-blue-500' : 'text-white/50'; 
+            %>
+            <a href="/" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('home') %> hover:text-white transition">Home</a>
+            <a href="/market" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('market') %> hover:text-white transition">Market</a>
+            <a href="/matches" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('matches') %> hover:text-white transition">Matches</a>
+            <a href="/metrics" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('metrics') %> hover:text-white transition">Metrics</a>
+            <a href="/league-records" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('records') %> hover:text-white transition">League Records</a>
+            <a href="/admin" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('admin') %> hover:text-white transition">Admin</a>
+        </div>
+
+        <a href="#" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition shadow-[0_0_20px_rgba(37,99,235,0.4)]">Join Discord</a>
+    </div>
+</nav>
+<div class="h-20"></div>
