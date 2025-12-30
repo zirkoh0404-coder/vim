@@ -2,35 +2,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
 <style>
-    body { background-color: #050505; font-family: 'Inter', sans-serif; color: white; }
+    body { background-color: #050505; font-family: 'Inter', sans-serif; color: white; margin: 0; }
     .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    nav { z-index: 9999 !important; }
+
+    /* Discord Glow Animation */
+    .glow-discord {
+        box-shadow: 0 0 15px rgba(88, 101, 242, 0.4);
+        animation: pulse-glow 2s infinite;
+    }
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 5px rgba(88, 101, 242, 0.4); }
+        50% { box-shadow: 0 0 20px rgba(88, 101, 242, 0.7); }
+        100% { box-shadow: 0 0 5px rgba(88, 101, 242, 0.4); }
+    }
 </style>
 
-<nav class="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<nav class="fixed top-0 w-full bg-black/80 backdrop-blur-xl border-b border-white/5 h-20">
+    <div class="max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between">
         
-        <a href="/" class="flex items-center gap-3 shrink-0 group">
-            <div class="relative flex items-center justify-center">
-                <img src="https://i.postimg.cc/mD8Z8B7v/VIMSL.png" 
-                     alt="VIMSL" 
-                     id="navbar-logo"
-                     class="h-9 w-auto object-contain transition-opacity duration-300"
-                     onerror="this.style.display='none'; document.getElementById('logo-placeholder').classList.remove('hidden');">
-                
-                <div id="logo-placeholder" class="hidden w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center font-black italic text-white text-lg">
-                    V
-                </div>
+        <div class="flex items-center gap-8">
+            <a href="/" class="flex items-center gap-3 shrink-0 group">
+                <span class="text-xl font-black italic tracking-tighter text-white uppercase whitespace-nowrap">
+                    VIM <span class="text-blue-500">SUPER LEAGUE</span>
+                </span>
+            </a>
+
+            <div class="flex items-center gap-4 border-l border-white/10 pl-8">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <a href="/profile" class="flex items-center gap-3 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-2xl border border-white/10 transition group">
+                        <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center font-black italic text-[10px]">
+                            <%= user.name.charAt(0) %>
+                        </div>
+                        <div class="text-left hidden lg:block">
+                            <p class="text-[10px] font-bold text-white uppercase"><%= user.name %></p>
+                        </div>
+                    </a>
+                    <a href="/logout" class="text-[8px] font-black uppercase text-white/20 hover:text-red-500 transition">Logout</a>
+                <% } else { %>
+                    <a href="/profile" class="bg-white/5 hover:bg-white text-white hover:text-black px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest border border-white/10 transition">
+                        Sign In / Register
+                    </a>
+                <% } %>
             </div>
-            
-            <span class="text-xl font-black italic tracking-tighter text-white uppercase whitespace-nowrap">
-                VIM <span class="text-blue-500">SUPER LEAGUE</span>
-            </span>
-        </a>
+        </div>
         
-        <div class="hidden md:flex items-center gap-8">
+        <div class="hidden xl:flex items-center gap-8">
             <% 
                 const currentPage = (typeof page !== 'undefined') ? page : ''; 
                 const getStyle = (p) => (currentPage === p) ? 'text-blue-500' : 'text-white/50'; 
@@ -41,9 +61,19 @@
             <a href="/metrics" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('metrics') %> hover:text-white transition">Metrics</a>
             <a href="/league-records" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('records') %> hover:text-white transition">League Records</a>
             <a href="/admin" class="text-[10px] font-bold uppercase tracking-widest <%= getStyle('admin') %> hover:text-white transition">Admin</a>
+            
+            <div class="flex flex-col gap-1.5 items-center">
+                <a href="https://discord.gg/9Jz2d5PkwB" target="_blank" class="glow-discord bg-[#5865F2] text-white px-5 py-2 rounded-full text-[8px] font-black uppercase tracking-widest hover:brightness-110 transition flex items-center gap-2">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/>
+                    </svg>
+                    Discord
+                </a>
+                <a href="https://vimsuperleague-rulebook.base44.app/" target="_blank" class="text-white/30 hover:text-white text-[7px] font-black uppercase tracking-[0.2em] transition-colors">
+                    Handbook
+                </a>
+            </div>
         </div>
-
-        <a href="#" class="bg-blue-600 text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition shadow-[0_0_20px_rgba(37,99,235,0.4)]">Join Discord</a>
     </div>
 </nav>
 <div class="h-20"></div>
