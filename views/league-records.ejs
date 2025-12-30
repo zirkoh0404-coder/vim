@@ -1,36 +1,96 @@
 <%- include('partials/navbar') %>
 
-<main class="py-20 px-6 max-w-7xl mx-auto">
-    <div class="text-center mb-20">
-        <h1 class="text-7xl font-black italic uppercase tracking-tighter mb-2">LEAGUE <span class="text-blue-500">RECORDS</span></h1>
-        <p class="text-[10px] font-bold uppercase tracking-[0.5em] opacity-40">The VIM Super League Hall of Fame</p>
+<main class="py-24 px-6 max-w-7xl mx-auto space-y-20">
+    <div class="relative">
+        <div class="absolute -left-20 -top-20 w-64 h-64 bg-blue-600/10 blur-[100px] pointer-events-none"></div>
+        <div class="text-center relative z-10">
+            <h1 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-none mb-4">
+                HALL OF <span class="text-blue-500 drop-shadow-[0_0_30px_rgba(59,130,246,0.3)]">RECORDS</span>
+            </h1>
+            <div class="flex items-center justify-center gap-4">
+                <div class="h-[1px] w-12 bg-blue-500/50"></div>
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">The Eternal History of VIM Super League</p>
+                <div class="h-[1px] w-12 bg-blue-500/50"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <% if (records && records.length > 0) { %>
-            <% records.forEach(record => { %>
-                <div class="glass p-8 rounded-[40px] border border-white/5 hover:border-blue-500/30 transition-all group">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="bg-blue-600/10 p-4 rounded-2xl">
-                            <span class="text-2xl">🏆</span>
+            <% records.forEach((record, idx) => { %>
+                <div class="glass group relative p-10 rounded-[45px] border border-white/5 hover:border-blue-500/40 transition-all duration-500 overflow-hidden flex flex-col justify-between min-h-[320px]">
+                    
+                    <div class="absolute -right-12 -bottom-12 w-40 h-40 bg-blue-600/5 blur-[50px] group-hover:bg-blue-600/15 transition-all duration-700"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-8">
+                            <div class="w-14 h-14 bg-gradient-to-br from-blue-600/20 to-transparent rounded-2xl flex items-center justify-center border border-white/5 group-hover:border-blue-500/30 transition-colors">
+                                <span class="text-2xl filter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">🏆</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[8px] font-black text-blue-500 uppercase tracking-widest mb-1">Entry #<%= (idx + 1).toString().padStart(2, '0') %></span>
+                                <span class="block text-[10px] font-bold text-white/20 uppercase"><%= record.date %></span>
+                            </div>
                         </div>
-                        <span class="text-[10px] font-black uppercase tracking-widest opacity-30"><%= record.date %></span>
+
+                        <div class="space-y-2">
+                            <h3 class="text-2xl font-black text-white uppercase italic leading-none tracking-tighter group-hover:text-blue-400 transition-colors">
+                                <%= record.title %>
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-black uppercase text-white/30 tracking-widest">Held By</span>
+                                <span class="h-px w-4 bg-white/10"></span>
+                                <span class="text-sm font-black text-blue-500 uppercase italic"><%= record.holder %></span>
+                            </div>
+                        </div>
                     </div>
 
-                    <h3 class="text-xl font-black uppercase italic mb-1 group-hover:text-blue-500 transition-colors">
-                        <%= record.title %>
-                    </h3>
-                    <p class="text-blue-500 font-bold text-sm mb-4 tracking-tight">Held by: <%= record.holder %></p>
-                    
-                    <p class="text-white/40 text-xs leading-relaxed">
-                        <%= record.description %>
-                    </p>
+                    <div class="relative z-10 mt-8 pt-6 border-t border-white/5">
+                        <p class="text-white/40 text-[11px] leading-relaxed font-medium mb-4 line-clamp-2 group-hover:text-white/60 transition-colors">
+                            <%= record.description %>
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                             <div class="flex items-center gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
+                                <span class="text-[9px] font-black text-white uppercase tracking-[0.2em]">Verified Record</span>
+                            </div>
+                            <svg class="w-5 h-5 text-white/10 group-hover:text-blue-500/40 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
             <% }) %>
         <% } else { %>
-            <div class="col-span-full py-32 text-center glass rounded-[40px]">
-                <p class="text-xs font-bold uppercase tracking-widest opacity-20 italic">No records have been etched into history yet.</p>
+            <div class="col-span-full py-40 text-center glass rounded-[50px] border border-dashed border-white/10 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-transparent"></div>
+                <div class="relative z-10 space-y-4">
+                    <p class="text-4xl">📜</p>
+                    <p class="text-xs font-black uppercase tracking-[0.6em] text-white/20 italic">No records have been etched into history yet.</p>
+                </div>
             </div>
         <% } %>
     </div>
+
+    <div class="text-center pt-10">
+        <p class="text-[9px] font-bold text-white/10 uppercase tracking-[0.4em]">Records are made to be broken • Join the legacy</p>
+    </div>
 </main>
+
+<style>
+    /* Custom Glassmorphism for Hall of Fame */
+    .glass {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(12px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Page-wide background depth */
+    body {
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+        background-attachment: fixed;
+    }
+</style>
