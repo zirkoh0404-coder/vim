@@ -1,39 +1,70 @@
 <%- include('partials/navbar') %>
-<main class="max-w-7xl mx-auto px-10 py-20">
-    <div class="mb-20">
-        <h1 class="text-6xl font-black italic uppercase tracking-tighter mb-4 text-white">LEAGUE <span class="text-blue-500">METRICS</span></h1>
-        <p class="opacity-50 uppercase tracking-[0.5em] text-xs font-bold text-white">Live Statistics and Standings</p>
+
+<main class="max-w-7xl mx-auto px-6 py-24 space-y-24">
+    <div class="relative">
+        <div class="absolute -left-10 -top-10 w-40 h-40 bg-blue-600/10 blur-[80px] pointer-events-none"></div>
+        <h1 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white leading-none">
+            LEAGUE <span class="text-blue-500 drop-shadow-[0_0_20px_rgba(59,130,246,0.2)]">METRICS</span>
+        </h1>
+        <div class="flex items-center gap-3 mt-4">
+            <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-ping"></span>
+            <p class="opacity-50 uppercase tracking-[0.4em] text-[10px] font-black text-white">Live Data Engine • Season 1</p>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-12 mb-20">
+    <div class="space-y-12">
         <% if (groups && groups.length > 0) { %>
             <% groups.forEach(group => { %>
-                <div class="glass p-8 rounded-[30px] border border-white/5 overflow-hidden">
-                    <h2 class="text-xl font-bold uppercase italic mb-8 text-blue-500 tracking-widest"><%= group.name %></h2>
+                <div class="glass rounded-[40px] border border-white/5 overflow-hidden shadow-2xl">
+                    <div class="bg-white/[0.03] px-8 py-6 border-b border-white/5 flex justify-between items-center">
+                        <h2 class="text-xl font-black uppercase italic text-white tracking-widest">
+                            <%= group.name %> <span class="text-blue-500 ml-2 text-sm opacity-50">Standings</span>
+                        </h2>
+                        <div class="px-4 py-1 rounded-full bg-blue-600/10 border border-blue-500/20 text-[9px] font-black uppercase text-blue-400">
+                            Verified
+                        </div>
+                    </div>
+                    
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="text-[10px] uppercase opacity-40 border-b border-white/10 text-white">
-                                    <th class="pb-6 px-4">Team</th>
-                                    <th class="pb-6 text-center">MP</th>
-                                    <th class="pb-6 text-center">Wins</th>
-                                    <th class="pb-6 text-center">Loses</th>
-                                    <th class="pb-6 text-right px-4">Points</th>
+                                <tr class="text-[9px] uppercase font-black text-white/30 border-b border-white/5 bg-black/20">
+                                    <th class="py-5 px-8">Pos</th>
+                                    <th class="py-5">Team</th>
+                                    <th class="py-5 text-center">MP</th>
+                                    <th class="py-5 text-center">W</th>
+                                    <th class="py-5 text-center">L</th>
+                                    <th class="py-5 text-right px-8">PTS</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5 text-white">
+                            <tbody class="divide-y divide-white/[0.03] text-white">
                                 <% group.teams.forEach((team, index) => { %>
-                                    <tr class="hover:bg-white/[0.02] transition">
-                                        <td class="py-5 px-4 flex items-center gap-4">
-                                            <img src="<%= team.logo %>" class="w-8 h-8 object-contain">
-                                            <a href="/team/<%= group.id %>/<%= index %>" class="font-black text-sm uppercase hover:text-blue-500 transition cursor-pointer">
-                                                <%= team.name %>
-                                            </a>
+                                    <% 
+                                        let rankColor = "text-white/20";
+                                        if(index === 0) rankColor = "text-yellow-500";
+                                        if(index === 1) rankColor = "text-slate-400";
+                                        if(index === 2) rankColor = "text-amber-700";
+                                    %>
+                                    <tr class="hover:bg-blue-600/[0.03] transition-colors group">
+                                        <td class="py-6 px-8 font-black italic <%= rankColor %> text-lg">
+                                            <%= (index + 1).toString().padStart(2, '0') %>
                                         </td>
-                                        <td class="py-5 text-center text-sm font-bold opacity-80"><%= team.mp || 0 %></td>
-                                        <td class="py-5 text-center text-sm font-bold text-green-500"><%= team.wins || 0 %></td>
-                                        <td class="py-5 text-center text-sm font-bold text-red-500"><%= team.loses || 0 %></td>
-                                        <td class="py-5 text-right px-4 font-black text-blue-500 text-lg"><%= team.pts || 0 %></td>
+                                        <td class="py-6">
+                                            <div class="flex items-center gap-4">
+                                                <div class="relative">
+                                                    <img src="<%= team.logo %>" class="w-10 h-10 object-contain filter drop-shadow-lg group-hover:scale-110 transition-transform">
+                                                </div>
+                                                <a href="/team/<%= group.id %>/<%= index %>" class="font-black text-sm uppercase tracking-tight hover:text-blue-500 transition-colors">
+                                                    <%= team.name %>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <td class="py-6 text-center text-xs font-bold opacity-60"><%= team.mp || 0 %></td>
+                                        <td class="py-6 text-center text-xs font-bold text-green-500/80"><%= team.wins || 0 %></td>
+                                        <td class="py-6 text-center text-xs font-bold text-red-500/80"><%= team.loses || 0 %></td>
+                                        <td class="py-6 text-right px-8 font-black text-white text-xl tracking-tighter">
+                                            <%= team.pts || 0 %>
+                                        </td>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -42,32 +73,59 @@
                 </div>
             <% }) %>
         <% } else { %>
-            <div class="glass p-20 rounded-[30px] border border-white/5 text-center">
-                <p class="opacity-20 text-[10px] uppercase font-bold tracking-widest text-white">No standings tables created yet</p>
+            <div class="glass p-24 rounded-[40px] border border-dashed border-white/10 text-center">
+                <p class="opacity-20 text-[10px] uppercase font-black tracking-[0.6em] text-white">Data streams offline</p>
             </div>
         <% } %>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-20">
         <% ['scorers', 'saves', 'assists'].forEach(type => { %>
-            <div class="glass p-8 rounded-[30px] border border-white/5 text-white">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] mb-8 text-blue-500 text-center">TOP <%= type.toUpperCase() %></h3>
-                <div class="space-y-4">
+            <div class="glass rounded-[35px] border border-white/5 overflow-hidden flex flex-col">
+                <div class="p-6 bg-white/[0.02] border-b border-white/5">
+                    <h3 class="text-[11px] font-black uppercase tracking-[0.3em] text-blue-500 text-center">
+                        Top <%= type %>
+                    </h3>
+                </div>
+                
+                <div class="p-6 space-y-2">
                     <% if(leaderboards && leaderboards[type] && leaderboards[type].length > 0) { %>
+                        <% 
+                            // Get the highest value for the progress bar calculation
+                            const maxVal = leaderboards[type][0].value || 1; 
+                        %>
                         <% leaderboards[type].slice(0, 10).forEach((player, index) => { %>
-                            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                            <div class="flex justify-between items-center bg-white/[0.02] hover:bg-white/[0.05] p-3 rounded-2xl border border-white/5 transition-all group">
                                 <div class="flex items-center gap-3">
-                                    <span class="text-[10px] opacity-30 font-bold">#<%= index + 1 %></span>
-                                    <span class="text-xs font-bold uppercase tracking-tight"><%= player.name %></span>
+                                    <div class="w-6 h-6 rounded-lg bg-black/40 flex items-center justify-center text-[9px] font-black text-white/30 group-hover:text-blue-500 transition-colors">
+                                        <%= index + 1 %>
+                                    </div>
+                                    <span class="text-[11px] font-bold uppercase tracking-tight text-white/80 group-hover:text-white transition-colors">
+                                        <%= player.name %>
+                                    </span>
                                 </div>
-                                <span class="text-sm font-black text-white"><%= player.value %></span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black text-blue-500"><%= player.value %></span>
+                                    <div class="h-1 w-4 bg-blue-500/20 rounded-full overflow-hidden">
+                                        <div class="h-full bg-blue-500" style="width: <%= (player.value / maxVal) * 100 %>%"></div>
+                                    </div>
+                                </div>
                             </div>
                         <% }) %>
                     <% } else { %>
-                        <p class="text-[9px] opacity-20 text-center uppercase font-bold py-4">Waiting for data</p>
+                        <div class="py-10 text-center">
+                            <p class="text-[9px] opacity-20 uppercase font-black tracking-widest">No stats recorded</p>
+                        </div>
                     <% } %>
                 </div>
             </div>
         <% }) %>
     </div>
 </main>
+
+<style>
+    .glass {
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(15px);
+    }
+</style>
