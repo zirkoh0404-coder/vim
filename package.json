@@ -12,8 +12,12 @@
   "type": "commonjs",
   "dependencies": {
     "body-parser": "^2.2.1",
+    "connect-mongo": "^6.0.0",
     "ejs": "^3.1.10",
     "express": "^5.2.1",
-    "express-session": "^1.18.2"
+    "express-session": "^1.18.2",
+    "memorystore": "^1.6.7",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.1.1"
   }
 }
