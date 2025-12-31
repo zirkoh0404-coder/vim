@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Info Hub | VIM Super League</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <%- include('partials/navbar') %>
 </head>
 <body class="bg-[#050505] text-white">
@@ -12,29 +13,53 @@
         <section>
             <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-8 text-blue-500 text-center md:text-left">League Resources</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a href="https://discord.gg/uAt88UJwbG" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group">
-                    <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Community</p>
-                    <p class="text-lg font-bold">Discord</p>
+                
+                <a href="https://discord.gg/uAt88UJwbG" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Community</p>
+                        <p class="text-lg font-bold">Discord</p>
+                    </div>
+                    <i class="fa-brands fa-discord text-2xl text-[#5865F2] group-hover:scale-110 transition"></i>
                 </a>
-                <a href="https://www.roblox.com/communities/35728279/VIM-Super-League-BLR#!/about" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group">
-                    <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Platform</p>
-                    <p class="text-lg font-bold">Roblox</p>
+
+                <a href="https://www.roblox.com/communities/35728279/VIM-Super-League-BLR#!/about" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Platform</p>
+                        <p class="text-lg font-bold">Roblox</p>
+                    </div>
+                    <i class="fa-solid fa-square-poll-vertical text-2xl text-white group-hover:scale-110 transition"></i>
                 </a>
-                <a href="https://youtube.com/@vimleague?si=YzHmcioUvJoCghTH" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group">
-                    <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Media</p>
-                    <p class="text-lg font-bold">YouTube</p>
+
+                <a href="https://youtube.com/@vimleague?si=YzHmcioUvJoCghTH" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Media</p>
+                        <p class="text-lg font-bold">YouTube</p>
+                    </div>
+                    <i class="fa-brands fa-youtube text-2xl text-[#FF0000] group-hover:scale-110 transition"></i>
                 </a>
-                <a href="https://www.tiktok.com/@officialvimsuperleague?_r=1&_t=ZS-92gSKnCdXsL" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group">
-                    <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Social</p>
-                    <p class="text-lg font-bold">TikTok</p>
+
+                <a href="https://www.tiktok.com/@officialvimsuperleague?_r=1&_t=ZS-92gSKnCdXsL" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Social</p>
+                        <p class="text-lg font-bold">TikTok</p>
+                    </div>
+                    <i class="fa-brands fa-tiktok text-2xl text-white group-hover:scale-110 transition"></i>
                 </a>
-                <a href="https://m.twitch.tv/vim_super_league/home" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group border-purple-500/20">
-                    <p class="text-[10px] font-bold text-purple-400 uppercase mb-1">Live Stream</p>
-                    <p class="text-lg font-bold">Twitch</p>
+
+                <a href="https://m.twitch.tv/vim_super_league/home" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group border-purple-500/20 flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-purple-400 uppercase mb-1">Live Stream</p>
+                        <p class="text-lg font-bold">Twitch</p>
+                    </div>
+                    <i class="fa-brands fa-twitch text-2xl text-[#9146FF] group-hover:scale-110 transition"></i>
                 </a>
-                <a href="https://vimsuperleague-rulebook.base44.app/" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group">
-                    <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Regulations</p>
-                    <p class="text-lg font-bold">Rulebook</p>
+
+                <a href="https://vimsuperleague-rulebook.base44.app/" target="_blank" class="glass p-6 rounded-2xl hover:bg-white/5 transition group flex items-start justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/40 uppercase mb-1">Regulations</p>
+                        <p class="text-lg font-bold">Rulebook</p>
+                    </div>
+                    <i class="fa-solid fa-book text-2xl text-blue-400 group-hover:scale-110 transition"></i>
                 </a>
             </div>
         </section>
@@ -42,17 +67,26 @@
         <section>
             <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-8 text-blue-500 text-center md:text-left">Join the Team</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <a href="https://forms.gle/dQTwe3DbtFgrB7qFA" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition text-center">
-                    <p class="text-[9px] font-bold text-blue-400 uppercase mb-2">Application</p>
-                    <p class="text-sm font-bold uppercase tracking-tight">Editorial Team</p>
+                <a href="https://forms.gle/dQTwe3DbtFgrB7qFA" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition flex items-center gap-4">
+                    <i class="fa-solid fa-pen-nib text-blue-500"></i>
+                    <div>
+                        <p class="text-[9px] font-bold text-blue-400 uppercase">Application</p>
+                        <p class="text-sm font-bold uppercase tracking-tight">Editorial Team</p>
+                    </div>
                 </a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfofj8qvOPyTMHvXn69VJCWPupnz0Bfm7inl5bmxJ54dtlt7Q/viewform" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition text-center">
-                    <p class="text-[9px] font-bold text-blue-400 uppercase mb-2">Application</p>
-                    <p class="text-sm font-bold uppercase tracking-tight">Moderation</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfofj8qvOPyTMHvXn69VJCWPupnz0Bfm7inl5bmxJ54dtlt7Q/viewform" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition flex items-center gap-4">
+                    <i class="fa-solid fa-shield-halved text-blue-500"></i>
+                    <div>
+                        <p class="text-[9px] font-bold text-blue-400 uppercase">Application</p>
+                        <p class="text-sm font-bold uppercase tracking-tight">Moderation</p>
+                    </div>
                 </a>
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeRBPSTQQqUyHhkzA2FYeUkgLdXhRiBea-P2LjDHMTPU86f7w/viewform" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition text-center">
-                    <p class="text-[9px] font-bold text-blue-400 uppercase mb-2">Application</p>
-                    <p class="text-sm font-bold uppercase tracking-tight">Management</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeRBPSTQQqUyHhkzA2FYeUkgLdXhRiBea-P2LjDHMTPU86f7w/viewform" target="_blank" class="glass p-5 rounded-xl hover:border-blue-500/50 transition flex items-center gap-4">
+                    <i class="fa-solid fa-user-tie text-blue-500"></i>
+                    <div>
+                        <p class="text-[9px] font-bold text-blue-400 uppercase">Application</p>
+                        <p class="text-sm font-bold uppercase tracking-tight">Management</p>
+                    </div>
                 </a>
             </div>
         </section>
