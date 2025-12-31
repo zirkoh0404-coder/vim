@@ -12,7 +12,7 @@
 
             <form action="/admin/add-match" method="POST" class="space-y-4 text-white">
                 <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Schedule Match</h3>
-          
+        
                 <div class="grid grid-cols-2 gap-4">
                     <input name="teamA" placeholder="Team 1" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
                     <input name="logoA" placeholder="Logo 1 URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
@@ -89,7 +89,6 @@
                     <input name="image" placeholder="Image URL (Widescreen recommended)" required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none focus:border-blue-500">
                     <button type="submit" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase text-[10px]">Publish Story</button>
                 </form>
-                
                 <div class="max-h-[200px] overflow-y-auto space-y-2">
                     <% if (typeof stories !== 'undefined') { %>
                         <% stories.forEach((story, sIdx) => { %>
@@ -189,13 +188,12 @@
                     <textarea name="lineupA" rows="8" placeholder="Team A Lineup (GK:Name:Rating)" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500"></textarea>
                     <textarea name="lineupB" rows="8" placeholder="Team B Lineup (GK:Name:Rating)" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500"></textarea>
                 </div>
-
                 <button type="submit" class="w-full bg-blue-600 py-5 rounded-[20px] font-black uppercase text-xs text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:scale-[1.01] transition-transform">Update Match Details</button>
             </div>
         </form>
     </div>
 
-    <div class="glass p-10 rounded-[40px] border border-blue-500/40">
+    <div class="glass p-10 rounded-[40px] border border-blue-500/20">
         <h2 class="text-2xl font-black italic uppercase text-blue-500 mb-8">Metrics Leaderboards</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <% ['scorers', 'assists', 'saves'].forEach(type => { %>
@@ -251,7 +249,6 @@
                             </div>
                             <span class="text-[10px] font-black uppercase text-yellow-500/50">Review Application ↓</span>
                         </summary>
-                       
                         <div class="p-8 bg-black/40 border-t border-white/5">
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                                 <div class="space-y-4">
@@ -287,7 +284,7 @@
                 <div class="py-12 text-center bg-white/[0.02] rounded-3xl border border-dashed border-white/10">
                     <p class="text-xs opacity-20 uppercase font-black tracking-[0.5em] text-white">No registrations pending</p>
                 </div>
-             <% } %>
+            <% } %>
         </div>
     </div>
 
@@ -312,7 +309,7 @@
 
                 <div class="grid grid-cols-1 gap-6">
                     <% group.teams.forEach((team, index) => { %>
-                          <div class="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
                             <form action="/admin/update-team" method="POST" class="grid grid-cols-2 md:grid-cols-7 gap-3 items-center text-white">
                                 <input type="hidden" name="groupId" value="<%= group.id %>">
                                 <input type="hidden" name="teamIndex" value="<%= index %>">
@@ -354,7 +351,7 @@
                                     </select>
                                     <button type="submit" class="bg-white/10 px-4 rounded-xl text-[9px] font-black uppercase text-white hover:bg-white/20 transition">Add To Squad</button>
                                     </form>
-                            </div>
+                        </div>
                         </div>
                     <% }) %>
                     <form action="/admin/update-team" method="POST" class="grid grid-cols-3 gap-2 p-6 border border-dashed border-white/10 rounded-3xl">
@@ -376,36 +373,62 @@
 
          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketList">
             <% players.filter(p => p.verified).forEach(player => { %>
-                 <details class="player-card group bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all" data-name="<%= player.name.toLowerCase() %>">
+                <details class="player-card group bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all" data-name="<%= player.name.toLowerCase() %>">
                     <summary class="p-6 cursor-pointer flex items-center justify-between list-none">
                          <div class="flex items-center gap-4">
                             <img src="<%= player.cardImage %>" class="w-12 h-12 rounded-xl object-cover border border-white/10">
                             <div>
                                  <p class="font-black text-white uppercase italic"><%= player.name %></p>
-                                 <p class="text-[9px] text-blue-400 font-bold uppercase">Verified Pro</p>
+                                <p class="text-[9px] text-blue-400 font-bold uppercase">Verified Pro</p>
                             </div>
                          </div>
                         <span class="text-[10px] font-black text-white/20 group-hover:text-blue-500 uppercase">Edit Stats ↓</span>
                     </summary>
                     <div class="p-8 bg-black/40 border-t border-white/5">
+                         <div class="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl mb-6">
+                            <p class="text-[8px] font-black uppercase text-yellow-500 mb-1">Security Credentials</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs text-white/60 font-mono tracking-widest uppercase">Password: <span class="text-white font-bold" id="passText-<%= player.id %>">••••••••</span></p>
+                                <button type="button" onclick="togglePasswordView('<%= player.id %>', '<%= player.password %>')" class="text-[10px] font-black text-yellow-500 uppercase hover:underline">Toggle View</button>
+                            </div>
+                         </div>
+
                          <form action="/admin/update-market-player" method="POST" class="space-y-6">
-                            <input type="hidden" name="username" value="<%= player.name %>">
+                            <input type="hidden" name="playerId" value="<%= player.id %>">
+                            <input type="hidden" name="username" value="<%= player.name %>"> 
+                            
                             <div class="grid grid-cols-2 gap-4">
-                                <input name="goals" type="number" value="<%= player.goals %>" placeholder="Goals" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
-                                <input name="assists" type="number" value="<%= player.assists %>" placeholder="Assists" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
-                                <input name="saves" type="number" value="<%= player.saves %>" placeholder="Saves" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
-                                <input name="mvps" type="number" value="<%= player.mvps %>" placeholder="MVPs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Goals</label>
+                                    <input name="goals" type="number" value="<%= player.goals %>" placeholder="Goals" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Assists</label>
+                                    <input name="assists" type="number" value="<%= player.assists %>" placeholder="Assists" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Saves</label>
+                                    <input name="saves" type="number" value="<%= player.saves %>" placeholder="Saves" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">MVPs</label>
+                                    <input name="mvps" type="number" value="<%= player.mvps %>" placeholder="MVPs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
                             </div>
                             <div>
                                 <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Market Card URL</label>
                                 <input name="cardImage" value="<%= player.cardImage %>" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none focus:border-blue-500">
                             </div>
-                            <textarea name="bio" placeholder="Bio" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none h-20"><%= player.bio %></textarea>
+                            <div>
+                                <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Player Bio</label>
+                                <textarea name="bio" placeholder="Bio" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none h-20"><%= player.bio %></textarea>
+                            </div>
+                            
                             <div class="flex gap-3 pt-4 border-t border-white/5">
                                 <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase text-[10px] text-white">Update Card & Stats</button>
-                                <button type="submit" formaction="/admin/delete-player" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase transition-all border border-red-500/20">Remove</button>
-                             </div>
-                        </form>
+                                <button type="button" onclick="triggerDelete('<%= player.id %>')" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase transition-all border border-red-500/20">Remove</button>
+                            </div>
+                         </form>
                     </div>
                 </details>
             <% }) %>
@@ -414,6 +437,30 @@
 </main>
 
 <script>
+    function togglePasswordView(id, actualPass) {
+        const textElement = document.getElementById(`passText-${id}`);
+        if (textElement.innerText === '••••••••') {
+            textElement.innerText = actualPass;
+        } else {
+            textElement.innerText = '••••••••';
+        }
+    }
+
+    function triggerDelete(id) {
+        if (confirm('PERMANENTLY DELETE THIS PLAYER FROM THE MARKET?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/delete-player';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'playerId';
+            input.value = id;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
     function filterPlayers() {
         let input = document.getElementById('playerSearch').value.toLowerCase();
         let cards = document.getElementsByClassName('player-card');
