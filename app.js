@@ -231,6 +231,28 @@ app.post('/admin/add-to-roster', async (req, res) => {
     res.redirect('/admin');
 });
 
+app.post('/admin/delete-from-roster', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    try {
+        const { groupId, teamIndex, playerIndex } = req.body;
+        const group = await Group.findById(groupId);
+        
+        if (group && group.teams[teamIndex] && group.teams[teamIndex].roster) {
+            // Remove the player at that specific position in the roster array
+            group.teams[teamIndex].roster.splice(playerIndex, 1);
+            
+            // Critical: Tell MongoDB that the roster array has changed
+            group.markModified(`teams.${teamIndex}.roster`);
+            await group.save();
+        }
+        
+        res.redirect('/admin');
+    } catch (err) {
+        console.error("Roster Delete Error:", err);
+        res.redirect('/admin?error=RosterDeleteFailed');
+    }
+});
+
 app.post('/admin/add-story', async (req, res) => {
     const info = await getInfo();
     info.stories.push({ ...req.body, id: Date.now().toString(), date: new Date().toLocaleDateString() });
