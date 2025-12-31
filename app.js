@@ -107,6 +107,10 @@ app.get('/match/:id', async (req, res) => {
 
 app.get('/metrics', (req, res) => res.render('metrics', { page: 'metrics' }));
 app.get('/league-records', (req, res) => res.render('league-records', { page: 'records' }));
+
+// NEW INFO PAGE ROUTE
+app.get('/info', (req, res) => res.render('info', { page: 'info' }));
+
 app.get('/admin-login', (req, res) => res.render('admin-login', { error: null, page: 'admin' }));
 
 app.get('/profile', (req, res) => {
@@ -263,5 +267,3 @@ app.post('/admin/delete-match', async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => console.log("VIM Hub Active"));
-
-
