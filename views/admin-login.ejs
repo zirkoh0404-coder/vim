@@ -1,25 +1,68 @@
 <%- include('partials/navbar') %>
 
-<div style="background: #050505; color: white; min-height: 80vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif;">
-    <div style="background: rgba(255,255,255,0.05); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 400px; text-align: center;">
-        
-        <h2 style="margin-bottom: 10px; text-transform: uppercase; font-style: italic;">STAFF <span style="color: #3b82f6;">LOGIN</span></h2>
-        <p style="font-size: 10px; opacity: 0.5; letter-spacing: 2px; margin-bottom: 25px;">RESTRICTED AREA</p>
+<div class="min-h-[90vh] flex items-center justify-center relative overflow-hidden bg-[#050505]">
+    
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 blur-[120px] rounded-full"></div>
 
-        <% if (error) { %>
-            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 15px; border-radius: 10px; font-size: 12px; margin-bottom: 20px; line-height: 1.5;">
-                <%= error %>
-            </div>
-        <% } %>
-
-        <form action="/admin-login" method="POST">
-            <input type="password" name="password" placeholder="Enter Security Key" required 
-                   style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: #000; color: white; text-align: center; outline: none;">
+    <div class="relative z-10 w-full max-w-md px-6">
+        <div class="glass p-10 rounded-[40px] border border-white/10 shadow-2xl backdrop-blur-xl">
             
-            <button type="submit" 
-                    style="width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2563eb; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s;">
-                Access Dashboard
-            </button>
-        </form>
+            <div class="text-center mb-10">
+                <div class="inline-block bg-blue-600/20 text-blue-500 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-4 border border-blue-500/20">
+                    System Authentication
+                </div>
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter text-white">
+                    STAFF <span class="text-blue-600">LOGIN</span>
+                </h2>
+                <div class="w-12 h-1 bg-blue-600 mx-auto mt-2 skew-x-[-20deg]"></div>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="bg-red-600/10 border-l-4 border-red-600 p-4 rounded-xl mb-6 animate-pulse">
+                    <div class="flex items-center">
+                        <span class="text-red-500 text-xs font-black uppercase tracking-widest"><%= error %></span>
+                    </div>
+                </div>
+            <% } %>
+
+            <form action="/admin-login" method="POST" class="space-y-6">
+                <div class="group">
+                    <label class="text-[10px] font-black uppercase text-white/40 ml-2 mb-2 block tracking-widest group-focus-within:text-blue-500 transition-colors">
+                        Security Access Key
+                    </label>
+                    <div class="relative">
+                        <input type="password" name="password" required 
+                               placeholder="••••••••••••"
+                               class="w-full bg-black/50 border border-white/10 p-5 rounded-2xl text-white text-center text-lg outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 transition-all placeholder:opacity-20 font-mono">
+                        
+                        <div class="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-white/20 rounded-tl-lg"></div>
+                        <div class="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-white/20 rounded-br-lg"></div>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                        class="w-full relative overflow-hidden bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-[0_10px_30px_rgba(37,99,235,0.3)] group">
+                    <span class="relative z-10">Access Dashboard</span>
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                </button>
+            </form>
+
+            <p class="text-[9px] text-white/20 text-center mt-8 font-bold uppercase tracking-[0.4em]">
+                Unauthorized Access is Prohibited
+            </p>
+        </div>
     </div>
 </div>
+
+<style>
+    /* Tailwind Shimmer Animation */
+    @keyframes shimmer {
+        100% { transform: translateX(100%); }
+    }
+    
+    .glass {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(10px);
+    }
+</style>
