@@ -4,7 +4,6 @@ const session = require('express-session');
 const app = express();
 
 // --- MONGODB CONNECTION ---
-// This looks for the Render environment variable first, then uses the string as a backup
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://vimsuperleague:alan78600@vimsuperleague.ic6a7ck.mongodb.net/vimhub?retryWrites=true&w=majority&appName=VIMSUPERLEAGUE";
 
 mongoose.connect(mongoURI)
@@ -56,14 +55,14 @@ const Info = mongoose.model('Info', new mongoose.Schema({
     stories: { type: Array, default: [] }
 }));
 
-// Helper to get Global Settings (LiveLink, etc)
+// Helper to get Global Settings
 async function getInfo() {
     let info = await Info.findOne();
     if (!info) info = await Info.create({});
     return info;
 }
 
-// Global Middleware to keep your front-end variables working
+// Global Middleware
 app.use(async (req, res, next) => {
     try {
         const info = await getInfo();
@@ -88,36 +87,25 @@ app.use(async (req, res, next) => {
 });
 
 // --- PAGES ---
-app.get('/', async (req, res) => {
-    res.render('index', { page: 'home' });
-});
-
+app.get('/', async (req, res) => res.render('index', { page: 'home' }));
 app.get('/market', async (req, res) => {
     const players = await Player.find({ verified: true });
     res.render('market', { page: 'market', players, error: req.query.error || null });
 });
-
 app.get('/matches', (req, res) => res.render('matches', { page: 'matches' }));
-
 app.get('/match/:id', async (req, res) => {
     const match = await Match.findById(req.params.id);
     if (!match) return res.redirect('/matches');
     res.render('match-details', { match, page: 'matches' });
 });
-
 app.get('/metrics', (req, res) => res.render('metrics', { page: 'metrics' }));
 app.get('/league-records', (req, res) => res.render('league-records', { page: 'records' }));
-
-// NEW INFO PAGE ROUTE
 app.get('/info', (req, res) => res.render('info', { page: 'info' }));
-
 app.get('/admin-login', (req, res) => res.render('admin-login', { error: null, page: 'admin' }));
-
 app.get('/profile', (req, res) => {
     if (!req.session.playerId) return res.redirect('/market?error=Please login first');
     res.render('profile', { page: 'profile', error: req.query.error || null });
 });
-
 app.get('/admin', (req, res) => {
     if (!req.session.isAdmin) return res.redirect('/admin-login');
     res.render('admin', { page: 'admin', error: req.query.error || null });
@@ -127,28 +115,17 @@ app.get('/admin', (req, res) => {
 app.post('/register', async (req, res) => {
     const exists = await Player.findOne({ name: new RegExp(`^${req.body.name}$`, 'i') });
     if (exists) return res.redirect('/market?error=Username already taken!');
-
     const newPlayer = await Player.create({ ...req.body });
     req.session.playerId = newPlayer._id;
     res.redirect('/profile');
 });
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const player = await Player.findOne({ name: new RegExp(`^${username}$`, 'i'), password });
-
-    if (player) {
-        req.session.playerId = player._id;
-        res.redirect('/profile');
-    } else {
-        res.redirect('/market?error=Invalid username or password');
-    }
+    if (player) { req.session.playerId = player._id; res.redirect('/profile'); }
+    else { res.redirect('/market?error=Invalid username or password'); }
 });
-
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
-});
+app.get('/logout', (req, res) => { req.session.destroy(); res.redirect('/'); });
 
 // --- ADMIN / DATA UPDATES ---
 app.post('/admin/live', async (req, res) => {
@@ -166,19 +143,13 @@ app.post('/admin/add-match', async (req, res) => {
 app.post('/admin/update-match-details', async (req, res) => {
     const { matchId } = req.body;
     const toArr = (val) => Array.isArray(val) ? val : (val ? [val] : []);
-
     const teamAPlayers = toArr(req.body.teamAPlayer).map((name, i) => ({
         name, type: toArr(req.body.teamAType)[i], value: toArr(req.body.teamAMainValue)[i], assists: toArr(req.body.teamAAssists)[i]
     }));
-
     const teamBPlayers = toArr(req.body.teamBPlayer).map((name, i) => ({
         name, type: toArr(req.body.teamBType)[i], value: toArr(req.body.teamBMainValue)[i], assists: toArr(req.body.teamBAssists)[i]
     }));
-
-    await Match.findByIdAndUpdate(matchId, {
-        status: 'completed',
-        details: { ...req.body, teamAPlayers, teamBPlayers }
-    });
+    await Match.findByIdAndUpdate(matchId, { status: 'completed', details: { ...req.body, teamAPlayers, teamBPlayers } });
     res.redirect('/admin');
 });
 
@@ -190,10 +161,8 @@ app.post('/admin/approve-player', async (req, res) => {
 app.post('/admin/update-market-player', async (req, res) => {
     const { username, goals, assists, saves, mvps, bio, cardImage } = req.body;
     await Player.findOneAndUpdate({ name: username }, {
-        goals: parseInt(goals) || 0,
-        assists: parseInt(assists) || 0,
-        saves: parseInt(saves) || 0,
-        mvps: parseInt(mvps) || 0,
+        goals: parseInt(goals) || 0, assists: parseInt(assists) || 0,
+        saves: parseInt(saves) || 0, mvps: parseInt(mvps) || 0,
         bio, cardImage
     });
     res.redirect('/admin');
@@ -208,11 +177,8 @@ app.post('/admin/update-team', async (req, res) => {
     const { groupId, teamIndex, teamName, logo, mp, wins, loses, pts } = req.body;
     const group = await Group.findById(groupId);
     if (group) {
-        if (teamIndex !== "" && group.teams[teamIndex]) {
-            Object.assign(group.teams[teamIndex], { mp, wins, loses, pts });
-        } else if (teamName) {
-            group.teams.push({ name: teamName, logo, mp: 0, wins: 0, loses: 0, pts: 0, roster: [] });
-        }
+        if (teamIndex !== "" && group.teams[teamIndex]) { Object.assign(group.teams[teamIndex], { mp, wins, loses, pts }); }
+        else if (teamName) { group.teams.push({ name: teamName, logo, mp: 0, wins: 0, loses: 0, pts: 0, roster: [] }); }
         await group.save();
     }
     res.redirect('/admin');
@@ -222,7 +188,6 @@ app.post('/admin/add-to-roster', async (req, res) => {
     const { groupId, teamIndex, playerName, isManager } = req.body;
     const player = await Player.findOne({ name: new RegExp(`^${playerName}$`, 'i') });
     if (!player) return res.redirect(`/admin?error=Player not found`);
-    
     const group = await Group.findById(groupId);
     if (group && group.teams[teamIndex]) {
         group.teams[teamIndex].roster.push({ name: player.name, isManager: isManager === "true" });
@@ -241,14 +206,44 @@ app.post('/admin/add-story', async (req, res) => {
 app.post('/admin/update-stat', async (req, res) => {
     const { type, statIndex, playerName, value } = req.body;
     const info = await getInfo();
-    if (statIndex !== "" && info.leaderboards[type][statIndex]) {
-        info.leaderboards[type][statIndex].value = value;
-    } else {
-        info.leaderboards[type].push({ name: playerName, value });
-    }
+    if (statIndex !== "" && info.leaderboards[type][statIndex]) { info.leaderboards[type][statIndex].value = value; }
+    else { info.leaderboards[type].push({ name: playerName, value }); }
     info.leaderboards[type].sort((a, b) => b.value - a.value);
     info.markModified('leaderboards');
     await info.save();
+    res.redirect('/admin');
+});
+
+// --- THE FIX: ADDING ALL DELETE ROUTES ---
+
+// Handle Delete Match
+app.post('/admin/delete-match', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    await Match.findByIdAndDelete(req.body.matchId);
+    res.redirect('/admin');
+});
+
+// Handle Delete Player
+app.post('/admin/delete-player', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    await Player.findByIdAndDelete(req.body.playerId);
+    res.redirect('/admin');
+});
+
+// Handle Delete Story
+app.post('/admin/delete-story', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    const info = await getInfo();
+    // Use the ID generated during creation to filter out the story
+    info.stories = info.stories.filter(s => s.id != req.body.storyId);
+    await info.save();
+    res.redirect('/admin');
+});
+
+// Handle Delete Group
+app.post('/admin/delete-group', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    await Group.findByIdAndDelete(req.body.groupId);
     res.redirect('/admin');
 });
 
@@ -258,12 +253,6 @@ app.post('/admin-login', (req, res) => {
         req.session.isAdmin = true;
         res.redirect('/admin');
     } else { res.render('admin-login', { error: "WRONG KEY!", page: 'admin' }); }
-});
-
-// Handle Delete Match
-app.post('/admin/delete-match', async (req, res) => {
-    await Match.findByIdAndDelete(req.body.matchId);
-    res.redirect('/admin');
 });
 
 app.listen(process.env.PORT || 3000, () => console.log("VIM Hub Active"));
