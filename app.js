@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const axios = require('axios'); // Added for easier API calls
 const app = express();
 
 // --- MONGODB CONNECTION ---
@@ -27,20 +26,11 @@ const ADMIN_KEY = "VIM-STAFF-2025";
 
 // --- MODELS ---
 const Player = mongoose.model('Player', new mongoose.Schema({
-    name: String, 
-    discord: String, 
-    robloxUsername: { type: String, default: "" }, // NEW
-    position: { type: String, default: "ST" },    // NEW
-    password: { type: String, required: true },
-    cardImage: { type: String, default: "" }, 
-    verified: { type: Boolean, default: false },
-    goals: { type: Number, default: 0 }, 
-    assists: { type: Number, default: 0 },
-    saves: { type: Number, default: 0 }, 
-    mvps: { type: Number, default: 0 },
-    experience: String, 
-    bio: String, 
-    views: [String]
+    name: String, discord: String, password: { type: String, required: true },
+    cardImage: { type: String, default: "" }, verified: { type: Boolean, default: false },
+    goals: { type: Number, default: 0 }, assists: { type: Number, default: 0 },
+    saves: { type: Number, default: 0 }, mvps: { type: Number, default: 0 },
+    experience: String, bio: String, views: [String]
 }));
 
 const Match = mongoose.model('Match', new mongoose.Schema({
@@ -123,44 +113,12 @@ app.get('/admin', (req, res) => {
 
 // --- AUTH ROUTES ---
 app.post('/register', async (req, res) => {
-    try {
-        const { name, discord, password, robloxUsername, position, experience } = req.body;
-
-        const exists = await Player.findOne({ name: new RegExp(`^${name}$`, 'i') });
-        if (exists) return res.redirect('/market?error=Username already taken!');
-
-        // --- ROBLOX AVATAR FETCHING (FULL BODY) ---
-        let finalAvatar = "";
-        try {
-            const userRes = await axios.get(`https://users.roblox.com/v1/users/search?keyword=${robloxUsername}&limit=1`);
-            if (userRes.data.data && userRes.data.data.length > 0) {
-                const userId = userRes.data.data[0].id;
-                // Fetching Full Body Avatar (size 420x420)
-                const thumbRes = await axios.get(`https://thumbnails.roblox.com/v1/users/avatar?userIds=${userId}&size=420x420&format=Png&isCircular=false`);
-                finalAvatar = thumbRes.data.data[0].imageUrl;
-            }
-        } catch (apiErr) {
-            console.log("Roblox API Error:", apiErr.message);
-        }
-
-        const newPlayer = await Player.create({ 
-            name, 
-            discord, 
-            password, 
-            robloxUsername, 
-            position: position ? position.toUpperCase() : "ST", 
-            experience,
-            cardImage: finalAvatar // Stores the full body image
-        });
-
-        req.session.playerId = newPlayer._id;
-        res.redirect('/profile');
-    } catch (err) {
-        console.error(err);
-        res.redirect('/market?error=Registration Failed');
-    }
+    const exists = await Player.findOne({ name: new RegExp(`^${req.body.name}$`, 'i') });
+    if (exists) return res.redirect('/market?error=Username already taken!');
+    const newPlayer = await Player.create({ ...req.body });
+    req.session.playerId = newPlayer._id;
+    res.redirect('/profile');
 });
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const player = await Player.findOne({ name: new RegExp(`^${username}$`, 'i'), password });
@@ -206,15 +164,7 @@ app.post('/admin/update-match-details', async (req, res) => {
 });
 
 app.post('/admin/approve-player', async (req, res) => {
-    const { playerId, cardImage } = req.body;
-    const updateData = { verified: true };
-    
-    // Only overwrite if a custom URL is provided by admin
-    if (cardImage && cardImage.trim() !== "") {
-        updateData.cardImage = cardImage;
-    }
-    
-    await Player.findByIdAndUpdate(playerId, updateData);
+    await Player.findByIdAndUpdate(req.body.playerId, { verified: true, cardImage: req.body.cardImage });
     res.redirect('/admin');
 });
 
@@ -249,11 +199,20 @@ app.get('/team/:groupId/:teamIndex', async (req, res) => {
     try {
         const { groupId, teamIndex } = req.params;
         const group = await Group.findById(groupId);
+        
+        // Safety check: make sure the group and the specific team exist
         if (!group || !group.teams[teamIndex]) {
             return res.redirect('/metrics?error=Team not found');
         }
+
         const team = group.teams[teamIndex];
-        res.render('team-details', { team, group, page: 'metrics' });
+
+        // This renders your new template and passes the 'team' and 'group' data to it
+        res.render('team-details', { 
+            team, 
+            group, 
+            page: 'metrics' 
+        });
     } catch (err) {
         console.error("Team Page Error:", err);
         res.redirect('/metrics');
@@ -277,11 +236,16 @@ app.post('/admin/delete-from-roster', async (req, res) => {
     try {
         const { groupId, teamIndex, playerIndex } = req.body;
         const group = await Group.findById(groupId);
+        
         if (group && group.teams[teamIndex] && group.teams[teamIndex].roster) {
+            // Remove the player at that specific position in the roster array
             group.teams[teamIndex].roster.splice(playerIndex, 1);
+            
+            // Critical: Tell MongoDB that the roster array has changed
             group.markModified(`teams.${teamIndex}.roster`);
             await group.save();
         }
+        
         res.redirect('/admin');
     } catch (err) {
         console.error("Roster Delete Error:", err);
@@ -333,11 +297,14 @@ app.post('/admin/delete-story', async (req, res) => {
     try {
         const { storyIndex } = req.body;
         const info = await getInfo();
+        
+        // Remove the story at the specific index position
         if (info.stories && info.stories[storyIndex] !== undefined) {
             info.stories.splice(storyIndex, 1);
-            info.markModified('stories');
+            info.markModified('stories'); // Tells MongoDB the array changed
             await info.save();
         }
+        
         res.redirect('/admin');
     } catch (err) {
         console.error(err);
