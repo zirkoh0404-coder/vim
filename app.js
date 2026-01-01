@@ -1,6 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const passport = require('passport'); // Added for Auth
+const DiscordStrategy = require('passport-discord').Strategy; // Added for Discord
+const RobloxStrategy = require('passport-roblox').Strategy; // Added for Roblox
 const app = express();
 
 // --- MONGODB CONNECTION ---
@@ -22,19 +25,27 @@ app.use(session({
     saveUninitialized: true
 }));
 
+// --- PASSPORT INITIALIZATION ---
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((obj, done) => done(null, obj));
+
 const ADMIN_KEY = "VIM-STAFF-2025"; 
 
 // --- MODELS ---
 const Player = mongoose.model('Player', new mongoose.Schema({
     name: String, 
     discord: String, 
-    discordId: { type: String, default: "" }, // Added for Discord Connect
+    discordId: { type: String, default: "" }, 
+    robloxId: { type: String, default: "" }, // Added for Roblox Connect
     password: { type: String, required: true },
     cardImage: { type: String, default: "" }, 
     verified: { type: Boolean, default: false },
-    position: { type: String, default: "" }, // Added
-    country: { type: String, default: "" },  // Added
-    timezone: { type: String, default: "" }, // Added
+    position: { type: String, default: "" }, 
+    country: { type: String, default: "" },  
+    timezone: { type: String, default: "" }, 
     goals: { type: Number, default: 0 }, 
     assists: { type: Number, default: 0 }, 
     saves: { type: Number, default: 0 }, 
@@ -42,6 +53,27 @@ const Player = mongoose.model('Player', new mongoose.Schema({
     experience: String, 
     bio: String, 
     views: [String]
+}));
+
+// --- AUTH STRATEGIES ---
+
+// Discord Strategy
+passport.use(new DiscordStrategy({
+    clientID: 'YOUR_DISCORD_CLIENT_ID',
+    clientSecret: 'YOUR_DISCORD_CLIENT_SECRET',
+    callbackURL: 'http://localhost:3000/auth/discord/callback',
+    scope: ['identify']
+}, async (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
+
+// Roblox Strategy
+passport.use(new RobloxStrategy({
+    clientID: 'YOUR_ROBLOX_CLIENT_ID',
+    clientSecret: 'YOUR_ROBLOX_CLIENT_SECRET',
+    callbackURL: 'http://localhost:3000/auth/roblox/callback'
+}, async (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
 }));
 
 const Match = mongoose.model('Match', new mongoose.Schema({
@@ -124,10 +156,26 @@ app.get('/admin', (req, res) => {
 
 // --- AUTH ROUTES ---
 
-// NEW: Discord OAuth Route (Placeholder for the logic)
-app.get('/auth/discord', (req, res) => {
-    // In a real setup, redirect to Discord API
-    res.redirect('/market?error=Discord Integration requires Client ID/Secret setup in app.js');
+// Discord Connect Logic
+app.get('/auth/discord', passport.authenticate('discord'));
+app.get('/auth/discord/callback', passport.authenticate('discord', { failureRedirect: '/profile?error=Discord Auth Failed' }), async (req, res) => {
+    if (req.session.playerId) {
+        await Player.findByIdAndUpdate(req.session.playerId, { discordId: req.user.id });
+        res.redirect('/profile?success=Discord Linked');
+    } else {
+        res.redirect('/market?error=Please login to link Discord');
+    }
+});
+
+// Roblox Connect Logic
+app.get('/auth/roblox', passport.authenticate('roblox'));
+app.get('/auth/roblox/callback', passport.authenticate('roblox', { failureRedirect: '/profile?error=Roblox Auth Failed' }), async (req, res) => {
+    if (req.session.playerId) {
+        await Player.findByIdAndUpdate(req.session.playerId, { robloxId: req.user.id });
+        res.redirect('/profile?success=Roblox Linked');
+    } else {
+        res.redirect('/market?error=Please login to link Roblox');
+    }
 });
 
 app.post('/register', async (req, res) => {
@@ -135,7 +183,6 @@ app.post('/register', async (req, res) => {
         const exists = await Player.findOne({ name: new RegExp(`^${req.body.name}$`, 'i') });
         if (exists) return res.redirect('/market?error=Username already taken!');
         
-        // Strictly preserving logic while adding the new fields from req.body
         const newPlayer = await Player.create({ 
             ...req.body,
             position: req.body.position || "",
@@ -163,7 +210,6 @@ app.post('/profile/update', async (req, res) => {
     try {
         if (!req.session.playerId) return res.redirect('/market?error=Please login first');
         const { bio, experience, discord, position, country, timezone } = req.body;
-        // Added position, country, timezone to update logic
         await Player.findByIdAndUpdate(req.session.playerId, { bio, experience, discord, position, country, timezone });
         res.redirect('/profile');
     } catch (err) { res.redirect('/profile?error=Update failed'); }
@@ -307,7 +353,6 @@ app.post('/market/view/:name', async (req, res) => {
         const player = await Player.findOne({ name: req.params.name });
         if (!player) return res.json({ success: false });
         
-        // Track unique views by IP or Session ID
         const viewerId = req.ip; 
         if (!player.views.includes(viewerId)) {
             player.views.push(viewerId);
