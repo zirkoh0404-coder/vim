@@ -219,10 +219,19 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
                 <div class="glass p-12 rounded-[40px] border-white/10">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-blue-500">Authorization</h3>
-                    <div class="space-y-4 mb-8">
-                        <a href="/auth/discord" class="flex items-center justify-center gap-3 w-full bg-[#5865F2] text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:opacity-90 transition">
-                            Login via Discord
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <a href="/auth/discord" class="flex items-center justify-center gap-2 bg-[#5865F2] text-white py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:opacity-90 transition shadow-lg">
+                            <i class="fab fa-discord text-sm"></i> Discord Login
                         </a>
+                        <a href="/auth/roblox" class="flex items-center justify-center gap-2 bg-white text-black py-4 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-gray-200 transition shadow-lg">
+                            <span class="text-sm"></span> Roblox Login
+                        </a>
+                    </div>
+
+                    <div class="relative flex items-center justify-center mb-8">
+                        <div class="w-full h-px bg-white/10"></div>
+                        <span class="absolute bg-[#0a0a0a] px-4 text-[9px] font-black text-white/20 uppercase italic">Or Manual Login</span>
                     </div>
                     
                     <form action="/login" method="POST" class="space-y-6">
@@ -257,6 +266,14 @@
                                 <option value="CST">CST</option>
                                 <option value="AEST">AEST</option>
                             </select>
+                        </div>
+
+                        <div class="bg-white/5 p-5 rounded-3xl border border-white/5 space-y-4">
+                            <p class="text-[9px] font-black text-white/30 uppercase tracking-[0.2em] text-center">Optional: Connect Socials</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="button" onclick="location.href='/auth/discord'" class="bg-[#5865F2]/10 border border-[#5865F2]/20 text-[#5865F2] py-3 rounded-xl text-[8px] font-black uppercase hover:bg-[#5865F2] hover:text-white transition">Link Discord</button>
+                                <button type="button" onclick="location.href='/auth/roblox'" class="bg-white/5 border border-white/10 text-white py-3 rounded-xl text-[8px] font-black uppercase hover:bg-white hover:text-black transition">Link Roblox</button>
+                            </div>
                         </div>
 
                         <textarea name="experience" placeholder="Past experience / Bio..." required class="form-input h-24 text-sm"></textarea>
