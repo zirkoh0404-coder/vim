@@ -71,7 +71,7 @@
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
         transform: translateY(50px) scale(0.95);
         opacity: 0;
-        animation: levitate 5s ease-in-out infinite; /* Floating Modal */
+        animation: levitate 5s ease-in-out infinite;
     }
 
     #modalContainer.show {
@@ -88,6 +88,9 @@
     .form-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 1rem; outline: none; transition: 0.3s; color: white; }
     .form-input:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
     select.form-input option { background: #0a0a0a; color: white; }
+
+    /* TOGGLE CLASSES */
+    .hidden-form { display: none !important; }
 </style>
 
 <% if (typeof error !== 'undefined' && error) { %>
@@ -118,7 +121,6 @@
                          onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
                         
                         <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
-                        
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
@@ -139,7 +141,6 @@
 
     <div id="bioModal" class="modal" onclick="closeBio()">
         <div class="max-w-5xl w-full flex flex-col md:flex-row gap-8 items-center relative" id="modalContainer" onclick="event.stopPropagation()">
-            
             <div class="relative group w-[320px] h-[450px] flex-shrink-0">
                 <div class="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
                 <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl">
@@ -157,7 +158,6 @@
 
             <div class="flex-1 glass p-10 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 text-[120px] font-black italic text-white/[0.03] pointer-events-none uppercase">STATS</div>
-
                 <div class="flex justify-between items-start mb-8 relative z-10">
                     <div>
                         <p id="modalDiscord" class="text-blue-400 font-bold text-xs uppercase tracking-[0.2em] mb-1"></p>
@@ -169,31 +169,16 @@
                         <p class="text-[8px] uppercase font-black text-blue-500 tracking-widest">PROFILE VIEWS</p>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 relative z-10">
-                    <div class="stat-badge p-4 rounded-2xl text-center">
-                        <p class="text-[8px] uppercase font-black text-white/30 mb-1">Goals</p>
-                        <p id="mGoals" class="text-3xl font-black italic text-white">0</p>
-                    </div>
-                    <div class="stat-badge p-4 rounded-2xl text-center">
-                        <p class="text-[8px] uppercase font-black text-white/30 mb-1">Assists</p>
-                        <p id="mAssists" class="text-3xl font-black italic text-white">0</p>
-                    </div>
-                    <div class="stat-badge p-4 rounded-2xl text-center">
-                        <p class="text-[8px] uppercase font-black text-white/30 mb-1">Saves</p>
-                        <p id="mSaves" class="text-3xl font-black italic text-white">0</p>
-                    </div>
-                    <div class="stat-badge p-4 rounded-2xl text-center border-blue-500/30 bg-blue-500/5">
-                        <p class="text-[8px] uppercase font-black text-blue-400 mb-1">MVP</p>
-                        <p id="mMvps" class="text-3xl font-black italic text-blue-500">0</p>
-                    </div>
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Goals</p><p id="mGoals" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Assists</p><p id="mAssists" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Saves</p><p id="mSaves" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center border-blue-500/30 bg-blue-500/5"><p class="text-[8px] uppercase font-black text-blue-400 mb-1">MVP</p><p id="mMvps" class="text-3xl font-black italic text-blue-500">0</p></div>
                 </div>
-
                 <div class="relative z-10">
                     <p class="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3 font-black">Experience & Biography</p>
                     <div id="modalBio" class="text-gray-300 leading-relaxed text-sm h-32 overflow-y-auto pr-4 italic bg-white/5 p-5 rounded-2xl border border-white/5 scrollbar-hide"></div>
                 </div>
-
                 <button onclick="closeBio()" class="mt-8 w-full bg-white text-black hover:bg-blue-600 hover:text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300">Return to Market</button>
             </div>
         </div>
@@ -211,17 +196,9 @@
                 </div>
             </div>
         <% } else { %>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-                <div class="glass p-12 rounded-[40px] border-white/10">
-                    <h3 class="text-2xl font-black italic mb-8 uppercase text-blue-500">Player Login</h3>
-                    <form action="/login" method="POST" class="space-y-6">
-                        <input name="username" placeholder="Roblox Username" required class="form-input">
-                        <input type="password" name="password" placeholder="Password" required class="form-input">
-                        <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg">AUTHORIZE</button>
-                    </form>
-                </div>
-
-                <div class="glass p-12 rounded-[40px] border-white/10">
+            <div class="max-w-2xl mx-auto">
+                
+                <div id="registerBox" class="glass p-12 rounded-[40px] border-white/10">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
                     <form action="/register" method="POST" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
@@ -243,13 +220,38 @@
                         <input type="password" name="password" placeholder="Create Password" required class="form-input">
                         <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">SUBMIT CONTRACT</button>
                     </form>
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Already have an account? Login</button>
+                    </div>
                 </div>
+
+                <div id="loginBox" class="glass p-12 rounded-[40px] border-white/10 hidden-form">
+                    <h3 class="text-2xl font-black italic mb-8 uppercase text-blue-500">Player Login</h3>
+                    <form action="/login" method="POST" class="space-y-6">
+                        <input name="username" placeholder="Roblox Username" required class="form-input">
+                        <input type="password" name="password" placeholder="Password" required class="form-input">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg">AUTHORIZE</button>
+                    </form>
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Need a contract? Register Here</button>
+                    </div>
+                </div>
+
             </div>
         <% } %>
     </div>
 </main>
 
 <script>
+    // FORM TOGGLE LOGIC
+    function toggleAuth() {
+        const reg = document.getElementById('registerBox');
+        const log = document.getElementById('loginBox');
+        reg.classList.toggle('hidden-form');
+        log.classList.toggle('hidden-form');
+    }
+
+    // PRESERVED ANIMATIONS AND LOGIC
     function tiltCard(e, el) {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -292,7 +294,6 @@
         setTimeout(() => {
             const modal = document.getElementById('bioModal');
             const container = document.getElementById('modalContainer');
-            
             modal.style.display = 'flex';
             setTimeout(() => {
                 modal.classList.add('active');
@@ -305,13 +306,8 @@
     function closeBio() { 
         const modal = document.getElementById('bioModal');
         const container = document.getElementById('modalContainer');
-        
         container.classList.remove('show');
         modal.classList.remove('active');
-        
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 400);
+        setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
 </script>
-
