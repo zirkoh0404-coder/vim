@@ -29,14 +29,64 @@
         animation-play-state: paused;
     }
 
-    /* Grayscale Logic */
-    .card-img {
-        filter: grayscale(100%);
+    /* FIFA CARD GENERATOR STYLES */
+    .fifa-card-container {
+        width: 260px;
+        height: 360px;
+        position: relative;
+        background: url('https://media.discordapp.net/attachments/1346746722415677440/1456250551745384621/image.png?ex=6957ae83&is=69565d03&hm=8bcd3a1edec694e6d003cb371db192a5b7d22f825698326b62d30c4500755d9d&=&format=webp&quality=lossless&width=474&height=660') no-repeat center center;
+        background-size: 100% 100%;
+        flex-shrink: 0;
+    }
+
+    .card-avatar {
+        position: absolute;
+        width: 170px;
+        top: 55px;
+        left: 45px;
+        z-index: 1;
+        filter: grayscale(100%) drop-shadow(0 10px 15px rgba(0,0,0,0.5));
         transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease;
     }
-    .player-card:hover .card-img {
+
+    .player-card:hover .card-avatar {
         filter: grayscale(0%);
         transform: scale(1.05);
+    }
+
+    .card-rating-text {
+        position: absolute;
+        top: 65px;
+        left: 42px;
+        font-size: 32px;
+        font-weight: 900;
+        color: #4a3321;
+        line-height: 1;
+        font-family: sans-serif;
+    }
+
+    .card-pos-text {
+        position: absolute;
+        top: 98px;
+        left: 44px;
+        font-size: 14px;
+        font-weight: 800;
+        color: #4a3321;
+        text-transform: uppercase;
+        font-family: sans-serif;
+    }
+
+    .card-name-text {
+        position: absolute;
+        bottom: 72px;
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 900;
+        color: #4a3321;
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
+        font-family: sans-serif;
     }
 
     /* SLEEK CLICK ANIMATION */
@@ -71,7 +121,7 @@
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
         transform: translateY(50px) scale(0.95);
         opacity: 0;
-        animation: levitate 5s ease-in-out infinite; /* Floating Modal */
+        animation: levitate 5s ease-in-out infinite;
     }
 
     #modalContainer.show {
@@ -111,21 +161,20 @@
             <div class="animate-conveyor gap-10 px-4">
                 <% let displayList = players.length < 5 ? [...players, ...players, ...players, ...players] : [...players, ...players]; %>
                 <% displayList.forEach(p => { %>
-                    <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
+                    <div class="player-card fifa-card-container group"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
                          onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>')">
                         
-                        <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
+                        <div class="card-rating-text">60</div>
+                        <div class="card-pos-text"><%= p.position || 'ST' %></div>
                         
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
-                            <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
-                            <div class="flex justify-between items-center mt-1">
-                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
-                                <div class="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md">
-                                    <span class="text-[9px] text-white font-black"><%= p.views ? p.views.length : 0 %></span>
-                                </div>
-                            </div>
+                        <img src="<%= p.cardImage %>" class="card-avatar">
+                        
+                        <div class="card-name-text"><%= p.name %></div>
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end pointer-events-none">
+                            <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
                         </div>
                     </div>
                 <% }) %>
@@ -216,8 +265,12 @@
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
                     <form action="/register" method="POST" class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <input name="name" placeholder="Roblox User" required class="form-input">
+                            <input name="name" placeholder="League Nickname" required class="form-input">
                             <input name="discord" placeholder="Discord User" required class="form-input">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input name="robloxUsername" placeholder="Roblox Username" required class="form-input">
+                            <input name="position" placeholder="Position (e.g. ST, GK)" required class="form-input uppercase">
                         </div>
                         <textarea name="experience" placeholder="Tell us about your past experience / Bio..." required class="form-input h-32"></textarea>
                         <input type="password" name="password" placeholder="Create Password" required class="form-input">
@@ -290,3 +343,4 @@
         }, 400);
     }
 </script>
+
