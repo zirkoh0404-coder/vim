@@ -2,6 +2,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 
 <style>
+    :root {
+        /* Default VIM Blue */
+        --accent: 59, 130, 246; 
+        --accent-dark: 37, 99, 235;
+    }
+
+    <% if (typeof user !== 'undefined' && user && user.theme) { %>
+        <% if (user.theme === 'ruby') { %>
+            :root { --accent: 239, 68, 68; --accent-dark: 220, 38, 38; }
+        <% } else if (user.theme === 'emerald') { %>
+            :root { --accent: 16, 185, 129; --accent-dark: 5, 150, 105; }
+        <% } else if (user.theme === 'gold') { %>
+            :root { --accent: 234, 179, 8; --accent-dark: 202, 138, 4; }
+        <% } %>
+    <% } %>
+
+    /* Re-map Tailwind Blue Classes to Theme Variables */
+    .text-blue-500 { color: rgb(var(--accent)) !important; }
+    .text-blue-400 { color: rgba(var(--accent), 0.8) !important; }
+    .bg-blue-600 { background-color: rgb(var(--accent-dark)) !important; }
+    .bg-blue-500 { background-color: rgb(var(--accent)) !important; }
+    .border-blue-500 { border-color: rgb(var(--accent)) !important; }
+    .border-blue-500\/50 { border-color: rgba(var(--accent), 0.5) !important; }
+    .border-blue-500\/10 { border-color: rgba(var(--accent), 0.1) !important; }
+    .bg-blue-600\/10 { background-color: rgba(var(--accent-dark), 0.1) !important; }
+    .bg-blue-500\/5 { background-color: rgba(var(--accent), 0.05) !important; }
+    .shadow-blue-600\/20 { --tw-shadow-color: rgba(var(--accent-dark), 0.2) !important; }
+    .border-t-blue-500 { border-top-color: rgb(var(--accent)) !important; }
+</style>
+
+<style>
     body { background-color: #050505; font-family: 'Inter', sans-serif; color: white; margin: 0; }
     .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
     ::-webkit-scrollbar { width: 8px; }
