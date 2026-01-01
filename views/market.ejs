@@ -87,6 +87,7 @@
 
     .form-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 1rem; outline: none; transition: 0.3s; color: white; }
     .form-input:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
+    select.form-input option { background: #0a0a0a; color: white; }
 </style>
 
 <% if (typeof error !== 'undefined' && error) { %>
@@ -114,12 +115,15 @@
                     <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
-                         onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>')">
+                         onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
                         
                         <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
                         
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
-                            <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
+                                <span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded-md italic"><%= p.position %></span>
+                            </div>
                             <div class="flex justify-between items-center mt-1">
                                 <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
                                 <div class="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md">
@@ -141,7 +145,11 @@
                 <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl">
                     <img id="modalImg" src="" class="w-full h-full object-cover">
                     <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
-                        <h2 id="modalName" class="text-4xl font-black italic uppercase text-white tracking-tighter"></h2>
+                        <div class="flex items-center gap-3">
+                            <span id="modalPosBadge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full italic"></span>
+                            <span id="modalCountryBadge" class="text-white/60 text-[10px] font-bold uppercase tracking-widest"></span>
+                        </div>
+                        <h2 id="modalName" class="text-4xl font-black italic uppercase text-white tracking-tighter mt-1"></h2>
                         <div class="h-1 w-12 bg-blue-500 mt-2"></div>
                     </div>
                 </div>
@@ -153,6 +161,7 @@
                 <div class="flex justify-between items-start mb-8 relative z-10">
                     <div>
                         <p id="modalDiscord" class="text-blue-400 font-bold text-xs uppercase tracking-[0.2em] mb-1"></p>
+                        <p id="modalTZ" class="text-[9px] text-white/60 font-black uppercase mb-1"></p>
                         <p class="text-[10px] text-white/40 font-bold uppercase">Official VIM Player Contract</p>
                     </div>
                     <div class="text-right">
@@ -214,12 +223,23 @@
 
                 <div class="glass p-12 rounded-[40px] border-white/10">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
-                    <form action="/register" method="POST" class="space-y-6">
+                    <form action="/register" method="POST" class="space-y-4">
                         <div class="grid grid-cols-2 gap-4">
                             <input name="name" placeholder="Roblox User" required class="form-input">
                             <input name="discord" placeholder="Discord User" required class="form-input">
                         </div>
-                        <textarea name="experience" placeholder="Tell us about your past experience / Bio..." required class="form-input h-32"></textarea>
+                        <div class="grid grid-cols-3 gap-4">
+                            <select name="position" required class="form-input">
+                                <option value="" disabled selected>POSITION</option>
+                                <option value="FWD">FORWARD</option>
+                                <option value="MID">MIDFIELD</option>
+                                <option value="DEF">DEFENSE</option>
+                                <option value="GK">GOALKEEPER</option>
+                            </select>
+                            <input name="country" placeholder="Country" required class="form-input">
+                            <input name="timezone" placeholder="Timezone (e.g. GMT+5)" required class="form-input">
+                        </div>
+                        <textarea name="experience" placeholder="Tell us about your past experience / Bio..." required class="form-input h-24"></textarea>
                         <input type="password" name="password" placeholder="Create Password" required class="form-input">
                         <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">SUBMIT CONTRACT</button>
                     </form>
@@ -245,7 +265,7 @@
         el.style.transform = `rotateY(0deg) rotateX(0deg) scale(1)`;
     }
 
-    async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews) {
+    async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz) {
         el.classList.add('card-active-anim');
         
         try {
@@ -260,6 +280,10 @@
         document.getElementById('modalImg').src = img;
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
+        document.getElementById('modalPosBadge').innerText = pos || 'PLAYER';
+        document.getElementById('modalCountryBadge').innerText = country || 'UNKNOWN';
+        document.getElementById('modalTZ').innerText = "TIMEZONE: " + (tz || 'N/A');
+        
         document.getElementById('mGoals').innerText = g;
         document.getElementById('mAssists').innerText = a;
         document.getElementById('mSaves').innerText = s;
@@ -290,3 +314,4 @@
         }, 400);
     }
 </script>
+
