@@ -26,11 +26,22 @@ const ADMIN_KEY = "VIM-STAFF-2025";
 
 // --- MODELS ---
 const Player = mongoose.model('Player', new mongoose.Schema({
-    name: String, discord: String, password: { type: String, required: true },
-    cardImage: { type: String, default: "" }, verified: { type: Boolean, default: false },
-    goals: { type: Number, default: 0 }, assists: { type: Number, default: 0 },
-    saves: { type: Number, default: 0 }, mvps: { type: Number, default: 0 },
-    experience: String, bio: String, views: [String]
+    name: String, 
+    discord: String, 
+    discordId: { type: String, default: "" }, // Added for Discord Connect
+    password: { type: String, required: true },
+    cardImage: { type: String, default: "" }, 
+    verified: { type: Boolean, default: false },
+    position: { type: String, default: "" }, // Added
+    country: { type: String, default: "" },  // Added
+    timezone: { type: String, default: "" }, // Added
+    goals: { type: Number, default: 0 }, 
+    assists: { type: Number, default: 0 }, 
+    saves: { type: Number, default: 0 }, 
+    mvps: { type: Number, default: 0 },
+    experience: String, 
+    bio: String, 
+    views: [String]
 }));
 
 const Match = mongoose.model('Match', new mongoose.Schema({
@@ -112,13 +123,33 @@ app.get('/admin', (req, res) => {
 });
 
 // --- AUTH ROUTES ---
-app.post('/register', async (req, res) => {
-    const exists = await Player.findOne({ name: new RegExp(`^${req.body.name}$`, 'i') });
-    if (exists) return res.redirect('/market?error=Username already taken!');
-    const newPlayer = await Player.create({ ...req.body });
-    req.session.playerId = newPlayer._id;
-    res.redirect('/profile');
+
+// NEW: Discord OAuth Route (Placeholder for the logic)
+app.get('/auth/discord', (req, res) => {
+    // In a real setup, redirect to Discord API
+    res.redirect('/market?error=Discord Integration requires Client ID/Secret setup in app.js');
 });
+
+app.post('/register', async (req, res) => {
+    try {
+        const exists = await Player.findOne({ name: new RegExp(`^${req.body.name}$`, 'i') });
+        if (exists) return res.redirect('/market?error=Username already taken!');
+        
+        // Strictly preserving logic while adding the new fields from req.body
+        const newPlayer = await Player.create({ 
+            ...req.body,
+            position: req.body.position || "",
+            country: req.body.country || "",
+            timezone: req.body.timezone || ""
+        });
+        
+        req.session.playerId = newPlayer._id;
+        res.redirect('/profile');
+    } catch (err) {
+        res.redirect('/market?error=Registration failed');
+    }
+});
+
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const player = await Player.findOne({ name: new RegExp(`^${username}$`, 'i'), password });
@@ -131,8 +162,9 @@ app.get('/logout', (req, res) => { req.session.destroy(); res.redirect('/'); });
 app.post('/profile/update', async (req, res) => {
     try {
         if (!req.session.playerId) return res.redirect('/market?error=Please login first');
-        const { bio, experience, discord } = req.body;
-        await Player.findByIdAndUpdate(req.session.playerId, { bio, experience, discord });
+        const { bio, experience, discord, position, country, timezone } = req.body;
+        // Added position, country, timezone to update logic
+        await Player.findByIdAndUpdate(req.session.playerId, { bio, experience, discord, position, country, timezone });
         res.redirect('/profile');
     } catch (err) { res.redirect('/profile?error=Update failed'); }
 });
@@ -169,11 +201,11 @@ app.post('/admin/approve-player', async (req, res) => {
 });
 
 app.post('/admin/update-market-player', async (req, res) => {
-    const { username, goals, assists, saves, mvps, bio, cardImage } = req.body;
+    const { username, goals, assists, saves, mvps, bio, cardImage, position, country, timezone } = req.body;
     await Player.findOneAndUpdate({ name: username }, {
         goals: parseInt(goals) || 0, assists: parseInt(assists) || 0,
         saves: parseInt(saves) || 0, mvps: parseInt(mvps) || 0,
-        bio, cardImage
+        bio, cardImage, position, country, timezone
     });
     res.redirect('/admin');
 });
@@ -199,15 +231,10 @@ app.get('/team/:groupId/:teamIndex', async (req, res) => {
     try {
         const { groupId, teamIndex } = req.params;
         const group = await Group.findById(groupId);
-        
-        // Safety check: make sure the group and the specific team exist
         if (!group || !group.teams[teamIndex]) {
             return res.redirect('/metrics?error=Team not found');
         }
-
         const team = group.teams[teamIndex];
-
-        // This renders your new template and passes the 'team' and 'group' data to it
         res.render('team-details', { 
             team, 
             group, 
@@ -236,16 +263,11 @@ app.post('/admin/delete-from-roster', async (req, res) => {
     try {
         const { groupId, teamIndex, playerIndex } = req.body;
         const group = await Group.findById(groupId);
-        
         if (group && group.teams[teamIndex] && group.teams[teamIndex].roster) {
-            // Remove the player at that specific position in the roster array
             group.teams[teamIndex].roster.splice(playerIndex, 1);
-            
-            // Critical: Tell MongoDB that the roster array has changed
             group.markModified(`teams.${teamIndex}.roster`);
             await group.save();
         }
-        
         res.redirect('/admin');
     } catch (err) {
         console.error("Roster Delete Error:", err);
@@ -279,6 +301,24 @@ app.post('/admin/update-stat', async (req, res) => {
     res.redirect('/admin');
 });
 
+// --- PLAYER VIEW TRACKING ---
+app.post('/market/view/:name', async (req, res) => {
+    try {
+        const player = await Player.findOne({ name: req.params.name });
+        if (!player) return res.json({ success: false });
+        
+        // Track unique views by IP or Session ID
+        const viewerId = req.ip; 
+        if (!player.views.includes(viewerId)) {
+            player.views.push(viewerId);
+            await player.save();
+        }
+        res.json({ success: true, count: player.views.length });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
 // --- DELETE ROUTES ---
 app.post('/admin/delete-match', async (req, res) => {
     if (!req.session.isAdmin) return res.redirect('/admin-login');
@@ -297,14 +337,11 @@ app.post('/admin/delete-story', async (req, res) => {
     try {
         const { storyIndex } = req.body;
         const info = await getInfo();
-        
-        // Remove the story at the specific index position
         if (info.stories && info.stories[storyIndex] !== undefined) {
             info.stories.splice(storyIndex, 1);
-            info.markModified('stories'); // Tells MongoDB the array changed
+            info.markModified('stories');
             await info.save();
         }
-        
         res.redirect('/admin');
     } catch (err) {
         console.error(err);
