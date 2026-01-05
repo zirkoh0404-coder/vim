@@ -114,13 +114,21 @@
         <div class="relative flex items-center mb-32 border-y border-white/5 py-12">
             <div class="animate-conveyor gap-10 px-4">
                 <% let displayList = players.length < 5 ? [...players, ...players, ...players, ...players] : [...players, ...players]; %>
-                <% displayList.forEach(p => { %>
+                <% displayList.forEach(p => { 
+                    /* DYNAMIC IMAGE LOGIC */
+                    let finalImage = (p.cardImage && p.cardImage !== 'none' && p.cardImage !== '') 
+                        ? p.cardImage 
+                        : `https://www.roblox.com/headshot-thumbnail/image?userName=${p.name}&width=420&height=420&format=png`;
+                %>
                     <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
-                         onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
+                         onclick="openBio(this, '<%= p.name %>', '<%= finalImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
                         
-                        <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
+                        <div class="w-full h-full <%= (p.cardImage && p.cardImage !== 'none') ? '' : 'bg-gradient-to-b from-blue-900/40 to-black' %>">
+                            <img src="<%= finalImage %>" class="card-img w-full h-full object-cover">
+                        </div>
+
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
@@ -197,7 +205,6 @@
             </div>
         <% } else { %>
             <div class="max-w-2xl mx-auto">
-                
                 <div id="registerBox" class="glass p-12 rounded-[40px] border-white/10">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
                     <form action="/register" method="POST" class="space-y-4">
@@ -236,7 +243,6 @@
                         <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Need a contract? Register Here</button>
                     </div>
                 </div>
-
             </div>
         <% } %>
     </div>
@@ -270,13 +276,11 @@
     async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz) {
         el.classList.add('card-active-anim');
         
-        // Populate static modal info first
         document.getElementById('modalName').innerText = name;
         document.getElementById('modalImg').src = img;
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
         
-        // UPDATED: Mapping the specific position, country, and timezone
         document.getElementById('modalPosBadge').innerText = pos || 'PLAYER';
         document.getElementById('modalCountryBadge').innerText = country || 'UNKNOWN';
         document.getElementById('modalTZ').innerText = "TIMEZONE: " + (tz || 'N/A');
@@ -287,7 +291,6 @@
         document.getElementById('mMvps').innerText = m;
         document.getElementById('modalViews').innerText = currentViews;
 
-        // Async view count update
         try {
             const response = await fetch(`/market/view/${name}`, { method: 'POST' });
             const data = await response.json();
@@ -298,7 +301,6 @@
             console.error("View count update failed", e);
         }
         
-        // Trigger modal display with preserved timings
         setTimeout(() => {
             const modal = document.getElementById('bioModal');
             const container = document.getElementById('modalContainer');
