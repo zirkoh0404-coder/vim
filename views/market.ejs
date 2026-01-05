@@ -29,6 +29,27 @@
         animation-play-state: paused;
     }
 
+    /* POSITION COLORS & GLASSMORPHISM SILHOUETTE */
+    .pos-fwd { --pos-color: #ef4444; --pos-glow: rgba(239, 68, 68, 0.3); }
+    .pos-mid { --pos-color: #f59e0b; --pos-glow: rgba(245, 158, 11, 0.3); }
+    .pos-def { --pos-color: #10b981; --pos-glow: rgba(16, 185, 129, 0.3); }
+    .pos-gk { --pos-color: #06b6d4; --pos-glow: rgba(6, 182, 212, 0.3); }
+    .pos-pro { --pos-color: #3b82f6; --pos-glow: rgba(59, 130, 246, 0.3); }
+
+    .glass-silhouette {
+        background: linear-gradient(180deg, var(--pos-glow) 0%, rgba(0,0,0,0.8) 100%);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .glass-silhouette svg {
+        filter: drop-shadow(0 0 15px var(--pos-color));
+        opacity: 0.6;
+    }
+
     /* Grayscale Logic */
     .card-img {
         filter: grayscale(100%);
@@ -114,8 +135,14 @@
         <div class="relative flex items-center mb-32 border-y border-white/5 py-12">
             <div class="animate-conveyor gap-10 px-4">
                 <% let displayList = players.length < 5 ? [...players, ...players, ...players, ...players] : [...players, ...players]; %>
-                <% displayList.forEach(p => { %>
-                    <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
+                <% displayList.forEach(p => { 
+                    let posClass = 'pos-pro';
+                    if(p.position === 'FWD') posClass = 'pos-fwd';
+                    if(p.position === 'MID') posClass = 'pos-mid';
+                    if(p.position === 'DEF') posClass = 'pos-def';
+                    if(p.position === 'GK') posClass = 'pos-gk';
+                %>
+                    <div class="player-card <%= posClass %> w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
                          onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
@@ -123,19 +150,19 @@
                         <% if (p.cardImage && p.cardImage.trim() !== "") { %>
                             <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
                         <% } else { %>
-                            <div class="card-img w-full h-full bg-gradient-to-b from-blue-900/20 to-black flex items-center justify-center relative">
+                            <div class="card-img w-full h-full glass-silhouette">
                                 <span class="absolute top-10 text-[60px] font-black italic text-white/5 select-none uppercase"><%= p.position || 'PRO' %></span>
-                                <svg class="w-32 h-32 text-white/10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                             </div>
                         <% } %>
 
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
-                                <span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded-md italic uppercase"><%= p.position || 'N/A' %></span>
+                                <span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded-md italic uppercase" style="background-color: var(--pos-color);"><%= p.position || 'N/A' %></span>
                             </div>
                             <div class="flex justify-between items-center mt-1">
-                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
+                                <p class="text-[9px] font-bold uppercase tracking-widest" style="color: var(--pos-color);">View Profile</p>
                                 <div class="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md">
                                     <span class="text-[9px] text-white font-black"><%= p.views ? p.views.length : 0 %></span>
                                 </div>
@@ -149,21 +176,21 @@
 
     <div id="bioModal" class="modal" onclick="closeBio()">
         <div class="max-w-5xl w-full flex flex-col md:flex-row gap-8 items-center relative" id="modalContainer" onclick="event.stopPropagation()">
-            <div class="relative group w-[320px] h-[450px] flex-shrink-0">
-                <div class="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+            <div class="relative group w-[320px] h-[450px] flex-shrink-0" id="modalGlowParent">
+                <div id="modalPositionGlow" class="absolute -inset-4 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
                 <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl bg-black">
                     <img id="modalImg" src="" class="w-full h-full object-cover">
-                    <div id="modalImgPlaceholder" class="w-full h-full bg-gradient-to-b from-blue-900/40 to-black flex items-center justify-center">
-                        <svg class="w-48 h-48 text-white/10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <div id="modalImgPlaceholder" class="w-full h-full glass-silhouette">
+                        <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                     </div>
 
                     <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
                         <div class="flex items-center gap-3">
-                            <span id="modalPosBadge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full italic uppercase"></span>
+                            <span id="modalPosBadge" class="text-white text-[10px] font-black px-3 py-1 rounded-full italic uppercase"></span>
                             <span id="modalCountryBadge" class="text-white/60 text-[10px] font-bold uppercase tracking-widest"></span>
                         </div>
                         <h2 id="modalName" class="text-4xl font-black italic uppercase text-white tracking-tighter mt-1"></h2>
-                        <div class="h-1 w-12 bg-blue-500 mt-2"></div>
+                        <div id="modalColorBar" class="h-1 w-12 mt-2"></div>
                     </div>
                 </div>
             </div>
@@ -282,10 +309,18 @@
     async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz) {
         el.classList.add('card-active-anim');
         
-        // Populate static modal info first
+        // MODAL POSITION THEMING
+        const colors = { 'FWD': '#ef4444', 'MID': '#f59e0b', 'DEF': '#10b981', 'GK': '#06b6d4', 'PRO': '#3b82f6' };
+        const activeColor = colors[pos] || colors['PRO'];
+        
+        document.getElementById('modalGlowParent').className = `relative group w-[320px] h-[450px] flex-shrink-0 pos-${(pos || 'pro').toLowerCase()}`;
+        document.getElementById('modalPositionGlow').style.backgroundColor = activeColor;
+        document.getElementById('modalPosBadge').style.backgroundColor = activeColor;
+        document.getElementById('modalColorBar').style.backgroundColor = activeColor;
+        document.getElementById('modalImgPlaceholder').className = `w-full h-full glass-silhouette pos-${(pos || 'pro').toLowerCase()}`;
+
         document.getElementById('modalName').innerText = name;
         
-        // Handling Image vs Silhouette Fallback in Modal
         const modalImg = document.getElementById('modalImg');
         const placeholder = document.getElementById('modalImgPlaceholder');
         if(img && img.trim() !== "" && img !== "undefined") {
@@ -299,8 +334,6 @@
 
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
-        
-        // UPDATED: Mapping the specific position, country, and timezone
         document.getElementById('modalPosBadge').innerText = pos || 'PLAYER';
         document.getElementById('modalCountryBadge').innerText = country || 'UNKNOWN';
         document.getElementById('modalTZ').innerText = "TIMEZONE: " + (tz || 'N/A');
@@ -311,7 +344,6 @@
         document.getElementById('mMvps').innerText = m;
         document.getElementById('modalViews').innerText = currentViews;
 
-        // Async view count update
         try {
             const response = await fetch(`/market/view/${name}`, { method: 'POST' });
             const data = await response.json();
@@ -322,7 +354,6 @@
             console.error("View count update failed", e);
         }
         
-        // Trigger modal display with preserved timings
         setTimeout(() => {
             const modal = document.getElementById('bioModal');
             const container = document.getElementById('modalContainer');
