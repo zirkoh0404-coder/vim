@@ -120,7 +120,15 @@
                          onmouseleave="resetTilt(this)"
                          onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
                         
-                        <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
+                        <% if (p.cardImage && p.cardImage.trim() !== "") { %>
+                            <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
+                        <% } else { %>
+                            <div class="card-img w-full h-full bg-gradient-to-b from-blue-900/20 to-black flex items-center justify-center relative">
+                                <span class="absolute top-10 text-[60px] font-black italic text-white/5 select-none uppercase"><%= p.position || 'PRO' %></span>
+                                <svg class="w-32 h-32 text-white/10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            </div>
+                        <% } %>
+
                         <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
                             <div class="flex justify-between items-start">
                                 <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
@@ -143,8 +151,12 @@
         <div class="max-w-5xl w-full flex flex-col md:flex-row gap-8 items-center relative" id="modalContainer" onclick="event.stopPropagation()">
             <div class="relative group w-[320px] h-[450px] flex-shrink-0">
                 <div class="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl">
+                <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl bg-black">
                     <img id="modalImg" src="" class="w-full h-full object-cover">
+                    <div id="modalImgPlaceholder" class="w-full h-full bg-gradient-to-b from-blue-900/40 to-black flex items-center justify-center">
+                        <svg class="w-48 h-48 text-white/10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+
                     <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
                         <div class="flex items-center gap-3">
                             <span id="modalPosBadge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full italic uppercase"></span>
@@ -272,7 +284,19 @@
         
         // Populate static modal info first
         document.getElementById('modalName').innerText = name;
-        document.getElementById('modalImg').src = img;
+        
+        // Handling Image vs Silhouette Fallback in Modal
+        const modalImg = document.getElementById('modalImg');
+        const placeholder = document.getElementById('modalImgPlaceholder');
+        if(img && img.trim() !== "" && img !== "undefined") {
+            modalImg.src = img;
+            modalImg.style.display = "block";
+            placeholder.style.display = "none";
+        } else {
+            modalImg.style.display = "none";
+            placeholder.style.display = "flex";
+        }
+
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
         
@@ -319,4 +343,3 @@
         setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
 </script>
-
