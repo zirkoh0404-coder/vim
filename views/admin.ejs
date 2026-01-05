@@ -1,472 +1,463 @@
 <%- include('partials/navbar') %>
-
-<style>
-    .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); }
-    .tab-btn.active { background: #3b82f6; color: white; box-shadow: 0 4px 20px rgba(59,130,246,0.3); }
-    .tab-btn:not(.active) { color: rgba(255,255,255,0.4); }
-    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.05); color: white; }
-    .hidden-tab { display: none !important; }
-</style>
-
-<main class="py-20 px-6 max-w-7xl mx-auto">
-    <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-white/5 pb-8">
-        <div>
-            <h2 class="text-5xl font-black italic uppercase tracking-tighter text-white">ADMIN <span class="text-blue-500">DASHBOARD</span></h2>
-            <p class="text-xs font-bold uppercase opacity-40 tracking-[0.3em] mt-2">VIM Hub Management Console</p>
-        </div>
-        
-        <div class="flex bg-white/5 p-1 rounded-2xl border border-white/10 overflow-x-auto">
-            <button onclick="switchTab('tab-matches')" class="admin-tab-trigger active tab-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap">Match Management</button>
-            <button onclick="switchTab('tab-leagues')" class="admin-tab-trigger tab-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap">League Tables</button>
-            <button onclick="switchTab('tab-market')" class="admin-tab-trigger tab-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap">Market & Apps</button>
-            <button onclick="switchTab('tab-content')" class="admin-tab-trigger tab-btn px-6 py-3 rounded-xl text-[10px] font-black uppercase transition-all whitespace-nowrap">Content & Records</button>
-        </div>
-    </div>
-
-    <div id="tab-matches" class="admin-tab-content space-y-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="glass p-8 rounded-[30px] space-y-8">
-                <form action="/admin/add-match" method="POST" class="space-y-4 text-white">
-                    <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Schedule Match</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input name="teamA" placeholder="Team 1" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                        <input name="logoA" placeholder="Logo 1 URL" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                        <input name="teamB" placeholder="Team 2" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                        <input name="logoB" placeholder="Logo 2 URL" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input name="time" placeholder="Time (e.g. 18:00)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                        <input name="tags" placeholder="Tags (e.g. SERIE A, LIVE)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
-                    </div>
-                    <label class="flex items-center gap-2 bg-white/5 p-4 rounded-2xl border border-white/10 cursor-pointer">
-                        <input type="checkbox" name="isLive" value="true" class="w-4 h-4 accent-blue-500">
-                        <span class="text-[10px] font-bold uppercase opacity-60">Set as LIVE match</span>
-                    </label>
-                    <button type="submit" class="w-full bg-white text-black py-4 rounded-2xl font-bold uppercase text-xs">Post Match</button>
-                </form>
-
-                <div class="pt-8 border-t border-white/5">
-                    <h3 class="text-xs font-bold uppercase opacity-40 mb-6">Current Schedule</h3>
-                    <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        <% matches.forEach((m) => { %>
-                            <div class="flex flex-col bg-white/5 p-5 rounded-2xl border border-white/5 gap-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm uppercase text-white font-black italic"><%= m.teamA %> vs <%= m.teamB %></span>
-                                    <form action="/admin/delete-match" method="POST" onsubmit="return confirm('Delete match?');">
-                                        <input type="hidden" name="matchId" value="<%= m.id %>">
-                                        <button type="submit" class="text-red-500 text-xl font-bold hover:scale-110 transition">×</button>
-                                    </form>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest"><%= m.time %></span>
-                                    <div class="flex gap-2">
-                                        <% if(m.tags) { m.tags.split(',').forEach(tag => { %>
-                                            <span class="bg-blue-600/20 text-blue-400 px-2 py-1 rounded text-[8px] font-black uppercase"><%= tag.trim() %></span>
-                                        <% })} %>
-                                    </div>
-                                </div>
-                            </div>
-                        <% }) %>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass p-8 rounded-[40px] border border-blue-500/30">
-                <div class="mb-8">
-                    <h2 class="text-2xl font-black italic uppercase text-white">Post-Match <span class="text-blue-500">Reports</span></h2>
-                    <p class="text-[9px] text-white/40 uppercase font-bold tracking-widest mt-1">Submit stats and results</p>
-                </div>
-
-                <form action="/admin/update-match-details" method="POST" class="space-y-6">
-                    <div class="bg-black/40 p-5 rounded-2xl border border-white/10">
-                        <p class="text-[10px] font-black uppercase text-blue-500 mb-3">Target Match</p>
-                        <select name="matchId" class="w-full bg-transparent text-white text-xs outline-none font-bold" required>
-                            <option value="" disabled selected>Select active match...</option>
-                            <% matches.forEach(m => { %>
-                                <option value="<%= m.id %>" class="bg-zinc-900"><%= m.teamA %> vs <%= m.teamB %> (<%= m.time %>)</option>
-                            <% }) %>
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-4">
-                            <textarea name="narrative" placeholder="Detailed Match Narrative..." class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs outline-none h-32 focus:border-blue-500"></textarea>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="number" name="possessionA" placeholder="T1 Pos %" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                                <input type="number" name="possessionB" placeholder="T2 Pos %" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-blue-500/5 p-4 rounded-2xl border border-blue-500/10">
-                                    <p class="text-[8px] font-black text-blue-500 uppercase mb-3">Team A Total</p>
-                                    <input type="number" name="goalsA" placeholder="Goals" class="w-full bg-white/5 p-2 rounded-lg text-white mb-2">
-                                    <input type="number" name="assistsA" placeholder="Assists" class="w-full bg-white/5 p-2 rounded-lg text-white">
-                                </div>
-                                <div class="bg-red-500/5 p-4 rounded-2xl border border-red-500/10">
-                                    <p class="text-[8px] font-black text-red-500 uppercase mb-3">Team B Total</p>
-                                    <input type="number" name="goalsB" placeholder="Goals" class="w-full bg-white/5 p-2 rounded-lg text-white mb-2">
-                                    <input type="number" name="assistsB" placeholder="Assists" class="w-full bg-white/5 p-2 rounded-lg text-white">
-                                </div>
-                            </div>
-                            <input name="highlights" placeholder="Highlights URL" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <input name="mvpName" placeholder="MVP Full Name" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                        <input name="mvpCardUrl" placeholder="MVP Card URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-[9px] font-black uppercase text-blue-500">Team A Individual Stats</span>
-                                <button type="button" onclick="addStatRow('teamA')" class="bg-blue-600 px-3 py-1 rounded-full text-[8px] font-black text-white">+ ADD ROW</button>
-                            </div>
-                            <div id="statRows-teamA" class="space-y-2"></div>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center">
-                                <span class="text-[9px] font-black uppercase text-red-500">Team B Individual Stats</span>
-                                <button type="button" onclick="addStatRow('teamB')" class="bg-red-600 px-3 py-1 rounded-full text-[8px] font-black text-white">+ ADD ROW</button>
-                            </div>
-                            <div id="statRows-teamB" class="space-y-2"></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-blue-600 py-5 rounded-2xl font-black uppercase text-xs text-white shadow-xl hover:bg-blue-500 transition-all">Submit Match Report</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div id="tab-leagues" class="admin-tab-content hidden-tab space-y-12">
-        <div class="flex justify-between items-center">
-            <h2 class="text-3xl font-black uppercase text-white">League <span class="text-blue-500">Tables</span></h2>
-            <form action="/admin/add-group" method="POST" class="flex gap-2">
-                <input name="name" placeholder="New Table Name..." required class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-xs text-white outline-none focus:border-blue-500">
-                <button type="submit" class="bg-blue-600 px-8 rounded-2xl text-[10px] font-black uppercase text-white">Create</button>
+<main class="py-20 px-6 max-w-7xl mx-auto space-y-12">
+    <h2 class="text-5xl font-black italic uppercase tracking-tighter text-white">ADMIN <span class="text-blue-500">DASHBOARD</span></h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="glass p-8 rounded-[30px] space-y-8">
+            <form action="/admin/live" method="POST" class="space-y-4">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Live Stream Link</h3>
+                <input name="link" value="<%= liveLink %>" placeholder="YouTube Link" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white outline-none">
+                <button type="submit" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase text-xs text-white">Update Live Feed</button>
             </form>
-        </div>
 
-        <div class="grid grid-cols-1 gap-8">
-            <% groups.forEach(group => { %>
-                <div class="glass p-8 rounded-[40px] border border-white/5 relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 text-[100px] font-black italic text-white/[0.02] pointer-events-none uppercase"><%= group.name %></div>
-                    
-                    <div class="flex justify-between items-center mb-10 relative z-10">
-                        <h4 class="text-2xl font-black italic uppercase text-white"><%= group.name %></h4>
-                        <form action="/admin/delete-group" method="POST" onsubmit="return confirm('Delete whole table?');">
-                            <input type="hidden" name="groupId" value="<%= group.id %>">
-                            <button type="submit" class="text-red-500 text-[10px] font-black border border-red-500/20 px-4 py-2 rounded-full uppercase hover:bg-red-500 hover:text-white transition">Delete Table</button>
-                        </form>
-                    </div>
+            <form action="/admin/add-match" method="POST" class="space-y-4 text-white">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Schedule Match</h3>
+        
+                <div class="grid grid-cols-2 gap-4">
+                    <input name="teamA" placeholder="Team 1" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="logoA" placeholder="Logo 1 URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="teamB" placeholder="Team 2" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                    <input name="logoB" placeholder="Logo 2 URL" class="bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                </div>
+                <div class="flex gap-4">
+                    <input name="time" placeholder="Match Time (e.g. 18:00)" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl outline-none">
+                    <input name="tags" placeholder="Tags (SERIE A, SEASON 1)" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl outline-none text-xs">
+                </div>
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-2 bg-white/5 border border-white/10 px-4 rounded-2xl cursor-pointer w-full">
+                        <input type="checkbox" name="isLive" value="true" class="accent-blue-500">
+                        <span class="text-[10px] font-bold uppercase text-white">Live Now</span>
+                    </label>
+                </div>
+  
+                <button type="submit" class="w-full bg-white text-black py-4 rounded-2xl font-bold uppercase text-xs">Post Match</button>
+            </form>
 
-                    <div class="space-y-6 relative z-10">
-                        <% group.teams.forEach((team, index) => { %>
-                            <div class="bg-white/[0.03] p-5 rounded-3xl border border-white/5 hover:border-white/20 transition">
-                                <form action="/admin/update-team" method="POST" class="grid grid-cols-2 md:grid-cols-7 gap-4 items-center">
-                                    <input type="hidden" name="groupId" value="<%= group.id %>">
-                                    <input type="hidden" name="teamIndex" value="<%= index %>">
-                                    
-                                    <div class="flex items-center gap-3">
-                                        <img src="<%= team.logo %>" class="w-6 h-6 object-contain">
-                                        <span class="font-black text-xs text-white uppercase italic"><%= team.name %></span>
-                                    </div>
-                                    
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-[7px] font-black uppercase opacity-40">MP</span>
-                                        <input name="mp" type="number" value="<%= team.mp || 0 %>" class="bg-black/40 border-none rounded-lg p-2 text-white text-center text-xs">
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-[7px] font-black uppercase text-green-500">W</span>
-                                        <input name="wins" type="number" value="<%= team.wins || 0 %>" class="bg-black/40 border-none rounded-lg p-2 text-white text-center text-xs">
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-[7px] font-black uppercase text-red-500">L</span>
-                                        <input name="loses" type="number" value="<%= team.loses || 0 %>" class="bg-black/40 border-none rounded-lg p-2 text-white text-center text-xs">
-                                    </div>
-                                    <div class="flex flex-col gap-1">
-                                        <span class="text-[7px] font-black uppercase text-blue-500">PTS</span>
-                                        <input name="pts" type="number" value="<%= team.pts || 0 %>" class="bg-blue-600/20 border-none rounded-lg p-2 text-blue-400 text-center text-xs font-black">
-                                    </div>
-                                    
-                                    <button type="submit" class="bg-white text-black py-3 rounded-xl text-[9px] font-black uppercase">Update</button>
-                                    <button type="submit" formaction="/admin/delete-team" class="bg-red-600/10 text-red-500 py-3 rounded-xl text-[9px] font-black uppercase border border-red-500/20">Remove</button>
+            <div class="space-y-3 pt-4 border-t border-white/5">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">Current Schedule</h3>
+                <div class="max-h-[200px] overflow-y-auto space-y-2">
+                    <% matches.forEach((m) => { %>
+                        <div class="flex flex-col bg-white/5 p-4 rounded-xl border border-white/5 gap-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] uppercase text-white font-bold"><%= m.teamA %> vs <%= m.teamB %></span>
+                                <form action="/admin/delete-match" method="POST" onsubmit="return confirm('Delete this match?');">
+                                    <input type="hidden" name="matchId" value="<%= m.id %>">
+                                    <button type="submit" class="text-red-500 text-[10px] font-black hover:scale-125 transition">×</button>
                                 </form>
-
-                                <div class="mt-6 pt-6 border-t border-white/5">
-                                    <div class="flex flex-wrap gap-2 items-center">
-                                        <span class="text-[9px] font-black uppercase opacity-40 mr-4 tracking-widest">SQUAD ROSTER:</span>
-                                        <% (team.roster || []).forEach((player, pIdx) => { %>
-                                            <div class="bg-white/5 border border-white/10 pl-4 pr-2 py-1.5 rounded-full flex items-center gap-3">
-                                                <span class="text-[10px] font-bold uppercase <%= player.isManager ? 'text-blue-400' : 'text-white' %>">
-                                                    <%= player.isManager ? 'MGR:' : '' %> <%= player.name %>
-                                                </span>
-                                                <form action="/admin/delete-from-roster" method="POST" class="inline">
-                                                    <input type="hidden" name="groupId" value="<%= group.id %>">
-                                                    <input type="hidden" name="teamIndex" value="<%= index %>">
-                                                    <input type="hidden" name="playerIndex" value="<%= pIdx %>">
-                                                    <button type="submit" class="text-red-500 font-bold hover:scale-125 transition">×</button>
-                                                </form>
-                                            </div>
-                                        <% }) %>
-                                        <form action="/admin/add-to-roster" method="POST" class="flex items-center gap-2 ml-auto">
-                                            <input type="hidden" name="groupId" value="<%= group.id %>">
-                                            <input type="hidden" name="teamIndex" value="<%= index %>">
-                                            <input name="playerName" required placeholder="Add player..." class="bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-[10px] text-white outline-none">
-                                            <select name="isManager" class="bg-white/5 border border-white/10 px-2 py-1.5 rounded-full text-[9px] text-white outline-none">
-                                                <option value="false">Player</option>
-                                                <option value="true">Manager</option>
-                                            </select>
-                                            <button type="submit" class="bg-blue-600 w-8 h-8 rounded-full text-white font-bold">+</button>
-                                        </form>
-                                    </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[9px] text-blue-400 font-bold"><%= m.time %></span>
+                                <div class="flex gap-1">
+                                    <% if(m.tags) { m.tags.split(',').forEach(t => { %>
+                                        <span class="bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded text-[8px] font-black uppercase"><%= t.trim() %></span>
+                                    <% })} %>
                                 </div>
                             </div>
-                        <% }) %>
-
-                        <form action="/admin/update-team" method="POST" class="bg-white/[0.01] border-2 border-dashed border-white/5 p-6 rounded-3xl flex flex-col md:flex-row gap-4">
-                            <input type="hidden" name="groupId" value="<%= group.id %>">
-                            <input name="teamName" placeholder="New Team Name" required class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                            <input name="logo" placeholder="Logo URL (Icon)" class="flex-1 bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                            <button type="submit" class="bg-white text-black px-10 py-4 rounded-2xl font-black uppercase text-xs">Register Team</button>
-                        </form>
-                    </div>
-                </div>
-            <% }) %>
-        </div>
-    </div>
-
-    <div id="tab-market" class="admin-tab-content hidden-tab space-y-12">
-        <div class="glass p-10 rounded-[40px] border border-yellow-500/20">
-            <div class="flex justify-between items-center mb-10">
-                <div>
-                    <h2 class="text-3xl font-black italic uppercase text-yellow-500">Application <span class="text-white">Queue</span></h2>
-                    <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest mt-1">Pending Player Approvals</p>
-                </div>
-                <input type="text" onkeyup="filterQueue(this)" placeholder="Search applications..." class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-xs text-white outline-none focus:border-yellow-500 transition-all w-64">
-            </div>
-
-            <div class="space-y-4" id="queueList">
-                <% let pendingApps = players.filter(p => !p.verified); %>
-                <% if (pendingApps.length > 0) { %>
-                    <% pendingApps.forEach(player => { %>
-                        <details class="queue-card group bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:border-yellow-500/40 transition">
-                            <summary class="p-6 cursor-pointer flex items-center justify-between list-none">
-                                <div class="flex items-center gap-6">
-                                    <div class="w-12 h-12 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500 font-black text-xl italic"><%= player.name.charAt(0) %></div>
-                                    <div>
-                                        <p class="font-black text-white uppercase italic text-lg leading-none"><%= player.name %></p>
-                                        <p class="text-xs text-blue-400 font-bold uppercase mt-1">Discord: <%= player.discord %></p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-[9px] font-black uppercase text-white/20 group-hover:text-yellow-500 transition">View Contract Details ↓</span>
-                                </div>
-                            </summary>
-                            <div class="p-10 bg-black/40 border-t border-white/5">
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                                    <div class="space-y-6">
-                                        <div class="space-y-2">
-                                            <p class="text-[10px] font-black uppercase opacity-30 text-white">Experience / Bio</p>
-                                            <div class="bg-white/5 p-6 rounded-2xl border border-white/5 italic text-white/80 text-sm leading-relaxed">
-                                                "<%= player.experience || player.bio %>"
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-4">
-                                            <div class="bg-white/5 p-4 rounded-2xl flex-1 border border-white/5">
-                                                <p class="text-[8px] font-black opacity-30 text-white uppercase mb-1">Timezone</p>
-                                                <p class="text-xs font-bold text-white"><%= player.timezone || 'N/A' %></p>
-                                            </div>
-                                            <div class="bg-white/5 p-4 rounded-2xl flex-1 border border-white/5" onclick="togglePasswordView('<%= player.id %>', '<%= player.password %>')">
-                                                <p class="text-[8px] font-black opacity-30 text-white uppercase mb-1">Password (Click to view)</p>
-                                                <p id="passText-<%= player.id %>" class="text-xs font-mono text-white">••••••••</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <form action="/admin/approve-player" method="POST" class="space-y-6">
-                                        <input type="hidden" name="playerId" value="<%= player.id %>">
-                                        <div class="space-y-2">
-                                            <label class="text-[10px] font-black uppercase text-blue-500">Official Market Card URL</label>
-                                            <input name="cardImage" placeholder="Paste generated card URL here..." class="w-full bg-black border border-white/10 p-5 rounded-2xl text-white text-xs outline-none focus:border-blue-500">
-                                        </div>
-                                        <div class="flex gap-4">
-                                            <button type="submit" class="flex-1 bg-green-600 py-5 rounded-2xl text-xs font-black uppercase text-white shadow-lg shadow-green-600/20">Approve & Publish</button>
-                                            <button type="submit" formaction="/admin/delete-player" class="bg-red-600/10 text-red-500 px-10 py-5 rounded-2xl text-xs font-black uppercase border border-red-500/20">Reject</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </details>
+                        </div>
                     <% }) %>
-                <% } else { %>
-                    <div class="py-20 text-center bg-white/[0.02] rounded-[40px] border-2 border-dashed border-white/5">
-                        <p class="text-xs opacity-20 uppercase font-black tracking-[0.8em] text-white italic">Queue Empty / All Clear</p>
-                    </div>
-                <% } %>
+                </div>
             </div>
         </div>
 
-        <div class="glass p-10 rounded-[40px] border border-blue-500/20">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-                <h2 class="text-3xl font-black italic uppercase text-white">Market <span class="text-blue-500">Registry</span></h2>
-                <div class="relative w-full md:w-96">
-                    <input type="text" id="playerSearch" onkeyup="filterPlayers()" placeholder="Filter active players..." class="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-xs text-white outline-none focus:border-blue-500">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="marketList">
-                <% players.filter(p => p.verified).forEach(player => { %>
-                    <details class="player-card group bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/40 transition" data-name="<%= player.name.toLowerCase() %>">
-                        <summary class="p-5 cursor-pointer flex items-center justify-between list-none">
-                            <div class="flex items-center gap-4">
-                                <% let pImg = (player.cardImage && player.cardImage !== 'none' && player.cardImage !== '') ? player.cardImage : `https://www.roblox.com/headshot-thumbnail/image?userName=${encodeURIComponent(player.name)}&width=420&height=420&format=png`; %>
-                                <img src="<%= pImg %>" class="w-10 h-10 rounded-xl object-cover border border-white/10">
-                                <span class="font-black text-white uppercase italic text-xs truncate"><%= player.name %></span>
-                            </div>
-                            <span class="text-lg text-white/10 group-hover:text-blue-500 transition">⚙</span>
-                        </summary>
-                        <div class="p-6 bg-black/40 border-t border-white/5">
-                            <form action="/admin/update-market-player" method="POST" class="space-y-4">
-                                <input type="hidden" name="playerId" value="<%= player.id %>">
-                                <input type="hidden" name="username" value="<%= player.name %>">
-                                <div class="grid grid-cols-2 gap-3">
-                                    <div class="space-y-1">
-                                        <p class="text-[7px] font-black uppercase opacity-40 text-white">Gls</p>
-                                        <input name="goals" type="number" value="<%= player.goals %>" class="w-full bg-white/5 border border-white/10 p-2 rounded-lg text-white text-xs">
-                                    </div>
-                                    <div class="space-y-1">
-                                        <p class="text-[7px] font-black uppercase opacity-40 text-white">Ast</p>
-                                        <input name="assists" type="number" value="<%= player.assists %>" class="w-full bg-white/5 border border-white/10 p-2 rounded-lg text-white text-xs">
-                                    </div>
-                                </div>
-                                <div class="space-y-1">
-                                    <p class="text-[7px] font-black uppercase opacity-40 text-white">Market Card URL</p>
-                                    <input name="cardImage" value="<%= player.cardImage %>" class="w-full bg-white/5 border border-white/10 p-2 rounded-lg text-white text-[10px]">
-                                </div>
-                                <button type="submit" class="w-full bg-blue-600 py-3 rounded-xl font-black uppercase text-[10px] text-white">Save Registry</button>
-                                <button type="button" onclick="triggerDelete('<%= player.id %>')" class="w-full text-red-500 text-[8px] font-black uppercase py-2 hover:underline">Revoke Contract</button>
+        <div class="space-y-8">
+            <div class="glass p-8 rounded-[30px] space-y-6">
+                <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-white">League Records Hub</h3>
+                <form action="/admin/add-record" method="POST" class="space-y-3">
+                    <input name="title" placeholder="Record Title" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none">
+                    <input name="holder" placeholder="Record Holder Name" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none">
+                    <input name="value" placeholder="Value (e.g. 52 Goals)" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none">
+                    <button type="submit" class="w-full bg-blue-600 py-3 rounded-xl font-bold uppercase text-[10px] text-white">Add Hall of Fame Record</button>
+                </form>
+                <div class="max-h-[150px] overflow-y-auto space-y-2">
+                    <% records.forEach(rec => { %>
+                        <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase text-white font-bold"><%= rec.title %>: <%= rec.holder %></span>
+                            <form action="/admin/delete-record" method="POST">
+                                <input type="hidden" name="recordId" value="<%= rec.id %>">
+                                <button class="text-red-500 text-[10px] font-black">×</button>
                             </form>
                         </div>
-                    </details>
-                <% }) %>
-            </div>
-        </div>
-    </div>
-
-    <div id="tab-content" class="admin-tab-content hidden-tab space-y-12">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 glass p-10 rounded-[40px] border border-blue-500/20">
-                <div class="mb-8">
-                    <h3 class="text-2xl font-black uppercase text-white italic">Index <span class="text-blue-500">News Feed</span></h3>
-                    <p class="text-[10px] text-white/40 font-bold uppercase mt-1">Manage home page stories</p>
+                    <% }) %>
                 </div>
-                <form action="/admin/add-story" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <input name="title" placeholder="Story Title" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                        <input name="image" placeholder="Cover Image URL" required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs">
-                    </div>
-                    <textarea name="description" placeholder="Main Narrative / Headline..." required class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs h-full min-h-[120px]"></textarea>
-                    <button type="submit" class="md:col-span-2 bg-white text-black py-5 rounded-2xl font-black uppercase text-xs">Publish Frontpage Story</button>
-                </form>
+            </div>
 
-                <div class="mt-10 space-y-3 max-h-[400px] overflow-y-auto pr-2">
+            <div class="glass p-8 rounded-[30px] border border-blue-500/20 space-y-6">
+                <h3 class="text-xs font-black uppercase text-blue-500 tracking-widest">Index News Manager</h3>
+                <form action="/admin/add-story" method="POST" class="space-y-3">
+                    <input name="title" placeholder="Story Title" required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none focus:border-blue-500">
+                    <textarea name="description" placeholder="Short Headline/Description..." required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none focus:border-blue-500 h-20"></textarea>
+                    <input name="image" placeholder="Image URL (Widescreen recommended)" required class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-xs text-white outline-none focus:border-blue-500">
+                    <button type="submit" class="w-full bg-white text-black py-3 rounded-xl font-black uppercase text-[10px]">Publish Story</button>
+                </form>
+                <div class="max-h-[200px] overflow-y-auto space-y-2">
                     <% if (typeof stories !== 'undefined') { %>
                         <% stories.forEach((story, sIdx) => { %>
-                            <div class="flex items-center gap-6 bg-white/5 p-4 rounded-3xl border border-white/5">
-                                <img src="<%= story.image %>" class="w-16 h-16 rounded-2xl object-cover">
+                            <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5">
+                                <img src="<%= story.image %>" class="w-10 h-10 rounded-lg object-cover">
                                 <div class="flex-1">
-                                    <h5 class="text-xs font-black text-white uppercase"><%= story.title %></h5>
-                                    <p class="text-[10px] text-white/40 uppercase mt-1">Live on Frontpage</p>
+                                    <p class="text-[10px] font-black text-white uppercase truncate w-32"><%= story.title %></p>
                                 </div>
                                 <form action="/admin/delete-story" method="POST">
                                     <input type="hidden" name="storyIndex" value="<%= sIdx %>">
-                                    <button class="bg-red-500/10 text-red-500 px-6 py-2 rounded-full text-[10px] font-black uppercase border border-red-500/10">Delete</button>
+                                    <button class="text-red-500 text-[10px] font-black hover:scale-125 transition">REMOVE</button>
                                 </form>
                             </div>
                         <% }) %>
                     <% } %>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="space-y-8">
-                <div class="glass p-8 rounded-[40px] border border-blue-500/10">
-                    <form action="/admin/live" method="POST" class="space-y-4">
-                        <h3 class="text-xs font-bold uppercase opacity-40 text-white">Global Broadcast Link</h3>
-                        <input name="link" value="<%= liveLink %>" placeholder="YouTube Stream URL" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-white text-xs outline-none">
-                        <button type="submit" class="w-full bg-blue-600 py-3 rounded-2xl font-black uppercase text-[10px] text-white">Update Feed</button>
-                    </form>
-                </div>
+    <div class="glass p-10 rounded-[40px] border border-blue-500/40 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+        <h2 class="text-2xl font-black italic uppercase text-white mb-2">Match <span class="text-blue-500">Detailed Reports</span></h2>
+        <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest mb-8">Update Overview, Lineups, and Stats for played matches</p>
 
-                <div class="glass p-8 rounded-[40px] border border-blue-500/10">
-                    <h3 class="text-xs font-bold uppercase opacity-40 text-white mb-6">Leaderboard Registry</h3>
-                    <% ['scorers', 'assists', 'saves'].forEach(statType => { %>
-                        <div class="mb-6 last:mb-0">
-                            <p class="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-3"><%= statType %></p>
-                            <form action="/admin/update-stat" method="POST" class="flex gap-2">
-                                <input type="hidden" name="type" value="<%= statType %>">
-                                <input name="playerName" placeholder="Name" class="flex-1 bg-white/5 border border-white/10 p-2 rounded-xl text-[10px] text-white">
-                                <input name="value" type="number" placeholder="#" class="w-14 bg-white/5 border border-white/10 p-2 rounded-xl text-[10px] text-white text-center">
-                                <button type="submit" class="bg-blue-600 px-4 rounded-xl text-white font-bold text-lg">+</button>
-                            </form>
-                        </div>
+        <form action="/admin/update-match-details" method="POST" class="space-y-8">
+            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                <h3 class="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] mb-4">1. Select Match</h3>
+                <select name="matchId" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500" required>
+                    <option value="" disabled selected>Select a scheduled match to update...</option>
+                    <% matches.forEach(m => { %>
+                        <option value="<%= m.id %>"><%= m.teamA %> vs <%= m.teamB %> (<%= m.time %>)</option>
                     <% }) %>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] mb-4">2. Match Overview & Media</h3>
+                    <div>
+                        <label class="text-[9px] uppercase font-bold opacity-40 text-white mb-2 block">Match Headline</label>
+                        <textarea name="narrative" placeholder="e.g. A dominant performance by Team A..." class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none h-20"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" name="possessionA" placeholder="Team A Pos %" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                        <input type="number" name="possessionB" placeholder="Team B Pos %" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                    </div>
+                    <input name="highlights" placeholder="Highlights Video URL" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input name="mvpName" placeholder="MVP Name" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                        <input name="mvpCardUrl" placeholder="MVP Card URL" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                    </div>
+                    <textarea name="standouts" placeholder="Overview Standouts (Player, Contribution)" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none h-20"></textarea>
                 </div>
 
-                <div class="glass p-8 rounded-[40px] border border-yellow-500/10">
-                    <h3 class="text-xs font-black uppercase text-yellow-500 tracking-widest mb-6">Hall of Fame</h3>
-                    <form action="/admin/add-record" method="POST" class="space-y-3">
-                        <input name="title" placeholder="Record Title (e.g. Most Goals)" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] text-white">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input name="holder" placeholder="Player" class="bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] text-white">
-                            <input name="value" placeholder="Value" class="bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] text-white">
+                <div class="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] mb-4">3. Team Stat Totals</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <p class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Team A</p>
+                            <input type="number" name="goalsA" placeholder="Total Goals" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                            <input type="number" name="assistsA" placeholder="Total Assists" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                            <input type="number" name="savesA" placeholder="Total Saves" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
                         </div>
-                        <button type="submit" class="w-full bg-yellow-600 py-3 rounded-xl font-black uppercase text-[10px] text-white">Add Legend</button>
+                        <div class="space-y-3">
+                            <p class="text-[8px] font-black text-red-400 uppercase tracking-widest">Team B</p>
+                            <input type="number" name="goalsB" placeholder="Total Goals" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                            <input type="number" name="assistsB" placeholder="Total Assists" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                            <input type="number" name="savesB" placeholder="Total Saves" class="w-full bg-black border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/5 p-8 rounded-[40px] border border-white/10">
+                <h3 class="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] mb-6">4. Core Player Statistics (Individual)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <p class="text-[10px] font-black text-white/40 uppercase">Team A Performance</p>
+                            <button type="button" onclick="addStatRow('teamA')" class="text-[10px] bg-blue-600/20 text-blue-400 px-4 py-1.5 rounded-full font-bold uppercase border border-blue-500/20">+ Add Player</button>
+                        </div>
+                        <div id="statRows-teamA" class="space-y-3"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <p class="text-[10px] font-black text-white/40 uppercase">Team B Performance</p>
+                            <button type="button" onclick="addStatRow('teamB')" class="text-[10px] bg-red-600/20 text-red-400 px-4 py-1.5 rounded-full font-bold uppercase border border-red-500/20">+ Add Player</button>
+                        </div>
+                        <div id="statRows-teamB" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/5 p-6 rounded-3xl border border-white/10">
+                <h3 class="text-[10px] font-black uppercase text-blue-500 tracking-[0.2em] mb-4">5. Match Lineups</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <textarea name="lineupA" rows="8" placeholder="Team A Lineup (GK:Name:Rating)" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500"></textarea>
+                    <textarea name="lineupB" rows="8" placeholder="Team B Lineup (GK:Name:Rating)" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 py-5 rounded-[20px] font-black uppercase text-xs text-white shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:scale-[1.01] transition-transform">Update Match Details</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass p-10 rounded-[40px] border border-blue-500/20">
+        <h2 class="text-2xl font-black italic uppercase text-blue-500 mb-8">Metrics Leaderboards</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <% ['scorers', 'assists', 'saves'].forEach(type => { %>
+                 <div class="space-y-4">
+                    <h4 class="text-[10px] font-black uppercase text-white/40 tracking-widest text-center"><%= type %> Leaderboard</h4>
+                    <form action="/admin/update-stat" method="POST" class="flex flex-col gap-2">
+                        <input type="hidden" name="type" value="<%= type %>">
+                        <input name="playerName" placeholder="Player Name" class="bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] text-white outline-none">
+                        <input name="value" type="number" placeholder="Stat Value" class="bg-white/5 border border-white/10 p-3 rounded-xl text-[10px] text-white outline-none">
+                        <button type="submit" class="bg-blue-600 py-2 rounded-xl text-[9px] font-black uppercase text-white">Add/Update</button>
                     </form>
-                    <div class="mt-6 space-y-2 max-h-[200px] overflow-y-auto pr-1">
-                        <% records.forEach(record => { %>
-                            <div class="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                <div class="text-[9px] uppercase font-bold text-white"><%= record.title %></div>
-                                <form action="/admin/delete-record" method="POST">
-                                    <input type="hidden" name="recordId" value="<%= record.id %>">
-                                    <button class="text-red-500 font-black px-2">×</button>
-                                </form>
+                    <div class="space-y-2">
+                        <% (leaderboards[type] || []).forEach((entry, idx) => { %>
+                            <div class="flex justify-between bg-black/40 p-2 rounded-lg border border-white/5">
+                                <span class="text-[10px] text-white uppercase"><%= entry.name %></span>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-[10px] text-blue-500 font-bold"><%= entry.value %></span>
+                                    <form action="/admin/delete-stat" method="POST">
+                                        <input type="hidden" name="type" value="<%= type %>">
+                                        <input type="hidden" name="statIndex" value="<%= idx %>">
+                                        <button class="text-red-500 text-[10px]">×</button>
+                                    </form>
+                                </div>
                             </div>
                         <% }) %>
                     </div>
                 </div>
-            </div>
+            <% }) %>
         </div>
+    </div>
+
+    <div class="glass p-10 rounded-[40px] border border-yellow-500/20">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl font-black italic uppercase text-yellow-500">Review Queue</h2>
+                <p class="text-[10px] text-white/40 uppercase font-bold tracking-widest">Awaiting verification</p>
+            </div>
+            <input type="text" onkeyup="filterQueue(this)" placeholder="SEARCH QUEUE..." class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[10px] text-white outline-none w-full md:w-64 focus:border-yellow-500 transition-all">
+        </div>
+
+        <div class="space-y-3" id="queueList">
+            <% let pending = players.filter(p => !p.verified); %>
+            <% if (pending.length > 0) { %>
+                <% pending.forEach(player => { %>
+                    <details class="queue-card group bg-white/[0.03] border border-white/5 rounded-2xl overflow-hidden hover:border-yellow-500/30 transition-all">
+                        <summary class="p-5 cursor-pointer flex items-center justify-between list-none">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-yellow-600/20 rounded-full flex items-center justify-center font-black italic text-yellow-500 uppercase"><%= player.name.charAt(0) %></div>
+                                <div>
+                                     <p class="font-black text-white uppercase italic text-sm"><%= player.name %></p>
+                                    <p class="text-[9px] text-blue-400 font-bold uppercase"><%= player.discord %></p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-black uppercase text-yellow-500/50">Review Application ↓</span>
+                        </summary>
+                        <div class="p-8 bg-black/40 border-t border-white/5">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="text-[10px] font-black uppercase text-white/40 mb-2">Password chosen by user</p>
+                                        <p class="bg-white/5 p-3 rounded-lg text-xs text-yellow-500 font-mono"><%= player.password %></p>
+                                    </div>
+                                    <div>
+                                         <p class="text-[10px] font-black uppercase text-white/40 mb-2">Player Bio / Application</p>
+                                         <div class="bg-white/5 p-4 rounded-xl text-xs text-white/80 italic border border-white/5">"<%= player.experience || player.bio %>"</div>
+                                    </div>
+                                </div>
+                                <div class="lg:col-span-2 space-y-6">
+                                    <p class="text-[10px] font-black uppercase text-blue-500 tracking-widest">Verification & Card Assignment</p>
+                                    <form action="/admin/approve-player" method="POST" class="space-y-6">
+                                        <input type="hidden" name="playerId" value="<%= player.id %>">
+                                        <div class="space-y-3">
+                                            <label class="text-[11px] font-black uppercase text-white tracking-widest">Market Card Image URL</label>
+                                            <input name="cardImage" placeholder="Paste Custom Card URL" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500 shadow-inner">
+                                        </div>
+                                        <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-xl text-xs font-black uppercase text-white transition shadow-lg shadow-green-600/20">Approve & Publish Card</button>
+                                    </form>
+                                    <form action="/admin/delete-player" method="POST">
+                                        <input type="hidden" name="playerId" value="<%= player.id %>">
+                                        <button type="submit" class="w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-8 py-5 rounded-xl text-xs font-black uppercase transition border border-red-500/20">Reject App</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                <% }) %>
+            <% } else { %>
+                <div class="py-12 text-center bg-white/[0.02] rounded-3xl border border-dashed border-white/10">
+                    <p class="text-xs opacity-20 uppercase font-black tracking-[0.5em] text-white">No registrations pending</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="glass p-10 rounded-[30px] space-y-10">
+        <div class="flex justify-between items-center border-b border-white/5 pb-6">
+            <h3 class="text-xs font-bold uppercase opacity-40 tracking-widest text-blue-500">League Tables & Rosters</h3>
+            <form action="/admin/add-group" method="POST" class="flex gap-2">
+                <input name="name" placeholder="New Table Name" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-xs text-white">
+                <button type="submit" class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-bold uppercase text-white">Create Table</button>
+            </form>
+        </div>
+
+        <% groups.forEach(group => { %>
+            <div class="space-y-8 p-6 border border-white/5 rounded-[40px] bg-white/[0.02]">
+                <div class="flex justify-between items-center">
+                    <h4 class="text-blue-500 font-black italic uppercase text-xl"><%= group.name %></h4>
+                    <form action="/admin/delete-group" method="POST">
+                        <input type="hidden" name="groupId" value="<%= group.id %>">
+                        <button type="submit" class="text-red-500 text-[9px] font-bold border border-red-500/30 px-3 py-1 rounded-full uppercase">Delete Table</button>
+                    </form>
+                </div>
+
+                <div class="grid grid-cols-1 gap-6">
+                    <% group.teams.forEach((team, index) => { %>
+                        <div class="bg-white/5 p-6 rounded-3xl border border-white/5 space-y-6">
+                            <form action="/admin/update-team" method="POST" class="grid grid-cols-2 md:grid-cols-7 gap-3 items-center text-white">
+                                <input type="hidden" name="groupId" value="<%= group.id %>">
+                                <input type="hidden" name="teamIndex" value="<%= index %>">
+                                <div class="flex items-center gap-2 px-2">
+                                    <img src="<%= team.logo %>" class="w-5 h-5 object-contain">
+                                    <span class="font-bold text-xs truncate w-24"><%= team.name %></span>
+                                </div>
+                                <input name="mp" type="number" value="<%= team.mp || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none text-[10px]">
+                                <input name="wins" type="number" value="<%= team.wins || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none text-[10px]">
+                                <input name="loses" type="number" value="<%= team.loses || 0 %>" class="bg-black/40 rounded p-1 text-white text-center border-none text-[10px]">
+                                <input name="pts" type="number" value="<%= team.pts || 0 %>" class="bg-black/40 rounded p-1 text-blue-400 text-center border-none text-[10px]">
+                                <button type="submit" class="bg-blue-600 py-2 rounded-xl text-[8px] font-bold uppercase">Update</button>
+                                <button type="submit" formaction="/admin/delete-team" class="bg-red-500/10 text-red-500 py-2 rounded-xl text-[8px] font-bold uppercase">Delete</button>
+                            </form>
+
+                            <div class="bg-black/20 p-4 rounded-2xl space-y-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <% (team.roster || []).forEach((player, pIdx) => { %>
+                                         <div class="bg-white/5 px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/5">
+                                            <span class="text-[10px] uppercase <%= player.isManager ? 'text-blue-400 font-black' : 'text-white' %>">
+                                                <%= player.isManager ? 'MGR:' : '' %> <%= player.name %>
+                                              </span>
+                                            <form action="/admin/delete-from-roster" method="POST">
+                                                <input type="hidden" name="groupId" value="<%= group.id %>">
+                                                <input type="hidden" name="teamIndex" value="<%= index %>">
+                                                <input type="hidden" name="playerIndex" value="<%= pIdx %>">
+                                                <button type="submit" class="text-red-500 font-bold hover:scale-125 transition">×</button>
+                                                </form>
+                                        </div>
+                                    <% }) %>
+                                  </div>
+                                  <form action="/admin/add-to-roster" method="POST" class="flex gap-2">
+                                    <input type="hidden" name="groupId" value="<%= group.id %>">
+                                    <input type="hidden" name="teamIndex" value="<%= index %>">
+                                    <input name="playerName" required placeholder="Register Player" class="bg-black/40 p-2 rounded-xl text-[10px] flex-1 text-white outline-none">
+                                   <select name="isManager" class="bg-black/40 p-2 rounded-xl text-[10px] text-white outline-none">
+                                        <option value="false">Player</option>
+                                        <option value="true">Manager</option>
+                                    </select>
+                                    <button type="submit" class="bg-white/10 px-4 rounded-xl text-[9px] font-black uppercase text-white hover:bg-white/20 transition">Add To Squad</button>
+                                    </form>
+                        </div>
+                        </div>
+                    <% }) %>
+                    <form action="/admin/update-team" method="POST" class="grid grid-cols-3 gap-2 p-6 border border-dashed border-white/10 rounded-3xl">
+                        <input type="hidden" name="groupId" value="<%= group.id %>">
+                        <input name="teamName" placeholder="Team Name" class="bg-white/5 p-3 rounded-xl text-xs text-white outline-none">
+                        <input name="logo" placeholder="Logo URL" class="bg-white/5 p-3 rounded-xl text-xs text-white outline-none">
+                        <button type="submit" class="bg-white/10 text-white text-[10px] font-bold uppercase rounded-xl">Add New Team</button>
+                    </form>
+                </div>
+             </div>
+        <% }) %>
+    </div>
+
+    <div class="glass p-10 rounded-[40px] border border-blue-500/20">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-black italic uppercase text-white">Player <span class="text-blue-500">Market</span></h2>
+            <input type="text" id="playerSearch" onkeyup="filterPlayers()" placeholder="SEARCH MARKET..." class="bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[10px] text-white outline-none w-64 focus:border-blue-500 transition-all">
+        </div>
+
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketList">
+            <% players.filter(p => p.verified).forEach(player => { %>
+                <details class="player-card group bg-white/[0.03] border border-white/5 rounded-3xl overflow-hidden hover:border-blue-500/30 transition-all" data-name="<%= player.name.toLowerCase() %>">
+                    <summary class="p-6 cursor-pointer flex items-center justify-between list-none">
+    <div class="flex items-center gap-4">
+        <% 
+            // Fallback: If cardImage is empty or 'none', use Roblox Headshot API
+            let adminPreviewImg = (player.cardImage && player.cardImage !== 'none' && player.cardImage !== '') 
+                ? player.cardImage 
+                : `https://www.roblox.com/headshot-thumbnail/image?userName=${encodeURIComponent(player.name)}&width=420&height=420&format=png`;
+        %>
+        <img src="<%= adminPreviewImg %>" 
+             class="w-12 h-12 rounded-xl object-cover border border-white/10"
+             onerror="this.src='https://www.roblox.com/headshot-thumbnail/image?userName=Roblox&width=420&height=420&format=png'">
+        
+        <div>
+            <p class="font-black text-white uppercase italic"><%= player.name %></p>
+            <p class="text-[10px] text-blue-500 font-bold uppercase tracking-widest"><%= player.position || 'No Position' %></p>
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <span class="text-[10px] font-black px-3 py-1 rounded-full bg-white/5 text-white/40 uppercase tracking-tighter">
+            ID: <%= player._id.toString().slice(-6) %>
+        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white/20 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </div>
+</summary>
+                                <p class="text-[9px] text-blue-400 font-bold uppercase">Verified Pro</p>
+                            </div>
+                         </div>
+                        <span class="text-[10px] font-black text-white/20 group-hover:text-blue-500 uppercase">Edit Stats ↓</span>
+                    </summary>
+                    <div class="p-8 bg-black/40 border-t border-white/5">
+                         <div class="bg-yellow-500/5 border border-yellow-500/20 p-4 rounded-xl mb-6">
+                            <p class="text-[8px] font-black uppercase text-yellow-500 mb-1">Security Credentials</p>
+                            <div class="flex items-center justify-between">
+                                <p class="text-xs text-white/60 font-mono tracking-widest uppercase">Password: <span class="text-white font-bold" id="passText-<%= player.id %>">••••••••</span></p>
+                                <button type="button" onclick="togglePasswordView('<%= player.id %>', '<%= player.password %>')" class="text-[10px] font-black text-yellow-500 uppercase hover:underline">Toggle View</button>
+                            </div>
+                         </div>
+
+                         <form action="/admin/update-market-player" method="POST" class="space-y-6">
+                            <input type="hidden" name="playerId" value="<%= player.id %>">
+                            <input type="hidden" name="username" value="<%= player.name %>"> 
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Goals</label>
+                                    <input name="goals" type="number" value="<%= player.goals %>" placeholder="Goals" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Assists</label>
+                                    <input name="assists" type="number" value="<%= player.assists %>" placeholder="Assists" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">Saves</label>
+                                    <input name="saves" type="number" value="<%= player.saves %>" placeholder="Saves" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[8px] font-black uppercase text-white/40 mb-1 block">MVPs</label>
+                                    <input name="mvps" type="number" value="<%= player.mvps %>" placeholder="MVPs" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Market Card URL</label>
+                                <input name="cardImage" value="<%= player.cardImage %>" placeholder="Leave empty for Roblox headshot" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Player Bio</label>
+                                <textarea name="bio" placeholder="Bio" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none h-20"><%= player.bio %></textarea>
+                            </div>
+                            
+                            <div class="flex gap-3 pt-4 border-t border-white/5">
+                                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase text-[10px] text-white">Update Card & Stats</button>
+                                <button type="button" onclick="triggerDelete('<%= player.id %>')" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase transition-all border border-red-500/20">Remove</button>
+                            </div>
+                         </form>
+                    </div>
+                </details>
+            <% }) %>
+         </div>
     </div>
 </main>
 
 <script>
-    // TAB SWITCHING LOGIC
-    function switchTab(tabId) {
-        // Hide all
-        document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden-tab'));
-        document.querySelectorAll('.admin-tab-trigger').forEach(btn => btn.classList.remove('active'));
-        
-        // Show target
-        document.getElementById(tabId).classList.remove('hidden-tab');
-        event.currentTarget.classList.add('active');
-        
-        // Save to local storage so it persists on refresh
-        localStorage.setItem('adminActiveTab', tabId);
-    }
-
-    // Persist tab on refresh
-    window.addEventListener('load', () => {
-        const active = localStorage.getItem('adminActiveTab');
-        if (active && document.getElementById(active)) {
-            const btn = Array.from(document.querySelectorAll('.admin-tab-trigger')).find(b => b.getAttribute('onclick').includes(active));
-            if(btn) btn.click();
-        }
-    });
-
-    // ORIGINAL LOGIC PRESERVED (Lines 500+)
     function togglePasswordView(id, actualPass) {
         const textElement = document.getElementById(`passText-${id}`);
         if (textElement.innerText === '••••••••') {
@@ -496,11 +487,7 @@
         let cards = document.getElementsByClassName('player-card');
         for (let i = 0; i < cards.length; i++) {
             let name = cards[i].getAttribute('data-name');
-            if (name.includes(input)) {
-                cards[i].style.display = "";
-            } else {
-                cards[i].style.display = "none";
-            }
+            cards[i].style.display = name.includes(input) ? "" : "none";
         }
     }
 
@@ -533,3 +520,4 @@
         container.insertAdjacentHTML('beforeend', html);
     }
 </script>
+
