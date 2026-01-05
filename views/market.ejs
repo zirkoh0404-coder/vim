@@ -5,11 +5,13 @@
     .animate-conveyor { display: flex; animation: scroll 30s linear infinite; width: max-content; }
     .animate-conveyor:hover { animation-play-state: paused; }
     
+    /* LEVITATION EFFECT */
     @keyframes levitate {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-15px); }
     }
 
+    /* 3D TILT & GLOW EFFECT */
     .player-card { 
         transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
         cursor: pointer; 
@@ -18,41 +20,26 @@
         transform-style: preserve-3d;
         perspective: 1000px;
         animation: levitate 4s ease-in-out infinite;
-        background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
-        border: 1px solid rgba(255,255,255,0.05);
     }
     
     .player-card:hover { 
         z-index: 10; 
-        border-color: #3b82f6; 
+        border-color: rgba(59, 130, 246, 0.8); 
         box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.5);
         animation-play-state: paused;
     }
 
-    /* FALLBACK DESIGN STYLING */
-    .headshot-container {
-        position: relative;
-        width: 110px;
-        height: 110px;
-        margin-top: 20px;
-        z-index: 2;
+    /* Grayscale Logic */
+    .card-img {
+        filter: grayscale(100%);
+        transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease;
+    }
+    .player-card:hover .card-img {
+        filter: grayscale(0%);
+        transform: scale(1.05);
     }
 
-    .headshot-circle {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 3px solid #3b82f6;
-        padding: 4px;
-        background: rgba(0,0,0,0.3);
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-        transition: transform 0.3s ease;
-    }
-
-    .player-card:hover .headshot-circle {
-        transform: scale(1.1);
-    }
-
+    /* SLEEK CLICK ANIMATION */
     .card-active-anim {
         animation: sleekClick 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         pointer-events: none;
@@ -64,6 +51,7 @@
         100% { transform: scale(1.02); opacity: 0.8; }
     }
 
+    /* FIFA STYLE MODAL */
     .modal { 
         display: none; 
         position: fixed; 
@@ -77,12 +65,13 @@
         transition: all 0.4s ease;
     }
     
-    .modal.active { background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); }
+    .modal.active { background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); }
 
     #modalContainer {
         transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
         transform: translateY(50px) scale(0.95);
         opacity: 0;
+        animation: levitate 5s ease-in-out infinite;
     }
 
     #modalContainer.show {
@@ -91,80 +80,59 @@
     }
 
     .stat-badge {
-        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
         border: 1px solid rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
     }
 
-    .form-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1.2rem; outline: none; transition: 0.3s; color: white; font-style: italic; }
+    .form-input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 1rem; outline: none; transition: 0.3s; color: white; }
     .form-input:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
-    
-    .hidden-form { display: none !important; }
+    select.form-input option { background: #0a0a0a; color: white; }
 
-    .rating-badge {
-        background: #3b82f6;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
-    }
+    /* TOGGLE CLASSES */
+    .hidden-form { display: none !important; }
 </style>
 
 <% if (typeof error !== 'undefined' && error) { %>
-    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[110] bg-red-600 text-white px-10 py-5 rounded-[30px] font-black uppercase italic shadow-[0_20px_50px_rgba(220,38,38,0.5)] border-2 border-white/20 animate-bounce">
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-red-600 text-white px-10 py-5 rounded-[30px] font-black uppercase italic shadow-[0_20px_50px_rgba(220,38,38,0.5)] border-2 border-white/20 animate-bounce">
         ⚠️ <%= error %>
     </div>
 <% } %>
 
-<main class="py-24 overflow-hidden bg-[#020617] min-h-screen">
-    <div class="max-w-7xl mx-auto px-6 mb-16 flex justify-between items-end">
+<main class="py-20 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end">
         <div>
-            <div class="flex items-center gap-3 mb-2">
-                <div class="h-[2px] w-8 bg-blue-500"></div>
-                <span class="text-blue-500 font-black tracking-[0.4em] text-[10px] uppercase">VIM Season 2026</span>
-            </div>
-            <h2 class="text-6xl font-black italic uppercase tracking-tighter text-white">PLAYER <span class="text-blue-600">MARKET</span></h2>
+            <h2 class="text-5xl font-black italic uppercase tracking-tighter text-blue-500">PLAYER MARKET</h2>
+            <p class="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em]">VIM Super League Official Market</p>
         </div>
-        <div class="bg-blue-600/5 border border-blue-500/20 px-6 py-3 rounded-full backdrop-blur-xl">
-            <span class="text-[11px] text-blue-400 font-black uppercase tracking-widest">● LIVE SCOUTING: <%= players.length %> PLAYERS</span>
+        <div class="bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full">
+            <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest">● Online Players: <%= players.length %></span>
         </div>
     </div>
 
     <% if(players.length > 0) { %>
-        <div class="relative flex items-center mb-40 border-y border-white/5 py-16 bg-gradient-to-b from-blue-900/5 to-transparent">
-            <div class="animate-conveyor gap-12 px-6">
+        <div class="relative flex items-center mb-32 border-y border-white/5 py-12">
+            <div class="animate-conveyor gap-10 px-4">
                 <% let displayList = players.length < 5 ? [...players, ...players, ...players, ...players] : [...players, ...players]; %>
-                <% displayList.forEach(p => { 
-                    let cleanName = (p.name || 'Unknown').trim();
-                    let rating = p.rating || 60;
-                    // Updated Roblox Headshot Fetch Logic
-                    let robloxHeadshot = `https://www.roblox.com/headshot-thumbnail/image?userName=${encodeURIComponent(cleanName)}&width=150&height=150&format=png`;
-                    
-                    let hasCustomImage = (p.cardImage && p.cardImage !== 'none' && p.cardImage !== '');
-                %>
-                    <div class="player-card w-[260px] h-[360px] rounded-[35px] flex-shrink-0 relative group flex flex-col items-center"
+                <% displayList.forEach(p => { %>
+                    <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
-                         onclick="openBio(this, '<%= cleanName %>', '<%= hasCustomImage ? p.cardImage : robloxHeadshot %>', `<%= (p.experience || p.bio || 'No bio').replace(/`/g, '\\`') %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>', '<%= rating %>')">
+                         onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
                         
-                        <% if (hasCustomImage) { %>
-                            <img src="<%= p.cardImage %>" class="w-full h-full object-cover rounded-[35px]" onerror="this.src='<%= robloxHeadshot %>'">
-                        <% } else { %>
-                            <div class="absolute top-6 left-6 z-10">
-                                <div class="rating-badge w-11 h-11 rounded-full flex items-center justify-center border border-white/20">
-                                    <span class="text-white font-black text-xl italic"><%= rating %></span>
+                        <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
+                                <span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded-md italic uppercase"><%= p.position || 'N/A' %></span>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
+                                <div class="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md">
+                                    <span class="text-[9px] text-white font-black"><%= p.views ? p.views.length : 0 %></span>
                                 </div>
                             </div>
-                            <div class="headshot-container">
-                                <img src="<%= robloxHeadshot %>" class="headshot-circle object-cover" loading="lazy">
-                            </div>
-                            <div class="text-center mt-6 px-4">
-                                <span class="text-[9px] font-black text-blue-500/60 uppercase tracking-[0.3em] mb-1 block"><%= p.country || 'GLOBAL' %></span>
-                                <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white leading-tight"><%= cleanName %></h3>
-                            </div>
-                            <div class="mt-auto mb-8 flex gap-4 opacity-40 group-hover:opacity-100 transition-all">
-                                <div class="text-center"><p class="text-[8px] font-black text-white/50 uppercase">G</p><p class="text-xs font-bold text-white"><%= p.goals || 0 %></p></div>
-                                <div class="text-center"><p class="text-[8px] font-black text-white/50 uppercase">A</p><p class="text-xs font-bold text-white"><%= p.assists || 0 %></p></div>
-                                <div class="text-center"><p class="text-[8px] font-black text-white/50 uppercase">MVP</p><p class="text-xs font-bold text-blue-500"><%= p.mvps || 0 %></p></div>
-                            </div>
-                        <% } %>
+                        </div>
                     </div>
                 <% }) %>
             </div>
@@ -172,80 +140,110 @@
     <% } %>
 
     <div id="bioModal" class="modal" onclick="closeBio()">
-        <div class="max-w-4xl w-full flex flex-col md:flex-row gap-8 items-stretch relative p-4" id="modalContainer" onclick="event.stopPropagation()">
-            <div class="md:w-1/3 bg-[#0a0f1e] rounded-[40px] border border-white/10 p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
-                <div class="absolute top-[-20%] right-[-20%] w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full"></div>
-                <div class="relative z-10 w-32 h-32 rounded-full border-4 border-blue-600 p-2 mb-6">
-                    <img id="modalImg" src="" class="w-full h-full rounded-full object-cover shadow-2xl">
-                </div>
-                <div class="relative z-10 text-center">
-                    <div id="modalRating" class="text-5xl font-black italic text-blue-500 mb-2">60</div>
-                    <h2 id="modalName" class="text-3xl font-black italic uppercase text-white tracking-tighter mb-4"></h2>
-                    <div id="modalPosBadge" class="inline-block bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full italic uppercase tracking-widest"></div>
+        <div class="max-w-5xl w-full flex flex-col md:flex-row gap-8 items-center relative" id="modalContainer" onclick="event.stopPropagation()">
+            <div class="relative group w-[320px] h-[450px] flex-shrink-0">
+                <div class="absolute -inset-4 bg-blue-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                <div class="relative w-full h-full glass rounded-[40px] overflow-hidden border border-white/20 shadow-2xl">
+                    <img id="modalImg" src="" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
+                        <div class="flex items-center gap-3">
+                            <span id="modalPosBadge" class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full italic uppercase"></span>
+                            <span id="modalCountryBadge" class="text-white/60 text-[10px] font-bold uppercase tracking-widest"></span>
+                        </div>
+                        <h2 id="modalName" class="text-4xl font-black italic uppercase text-white tracking-tighter mt-1"></h2>
+                        <div class="h-1 w-12 bg-blue-500 mt-2"></div>
+                    </div>
                 </div>
             </div>
-            <div class="flex-1 bg-white/5 backdrop-blur-3xl p-10 rounded-[40px] border border-white/10 shadow-2xl relative">
-                <div class="flex justify-between items-start mb-10">
+
+            <div class="flex-1 glass p-10 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 text-[120px] font-black italic text-white/[0.03] pointer-events-none uppercase">STATS</div>
+                <div class="flex justify-between items-start mb-8 relative z-10">
                     <div>
-                        <p id="modalDiscord" class="text-blue-400 font-bold text-sm uppercase tracking-widest mb-1"></p>
-                        <p id="modalTZ" class="text-[10px] text-white/40 font-black uppercase italic"></p>
+                        <p id="modalDiscord" class="text-blue-400 font-bold text-xs uppercase tracking-[0.2em] mb-1"></p>
+                        <p id="modalTZ" class="text-[9px] text-white/60 font-black uppercase mb-1"></p>
+                        <p class="text-[10px] text-white/40 font-bold uppercase">Official VIM Player Contract</p>
                     </div>
                     <div class="text-right">
-                        <p id="modalViews" class="text-4xl font-black italic text-white leading-none">0</p>
-                        <p class="text-[8px] uppercase font-black text-blue-500 tracking-[0.2em] mt-1">TOTAL VIEWS</p>
+                        <p id="modalViews" class="text-5xl font-black italic text-white leading-none">0</p>
+                        <p class="text-[8px] uppercase font-black text-blue-500 tracking-widest">PROFILE VIEWS</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-                    <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Goals</p><p id="mGoals" class="text-3xl font-black italic text-white">0</p></div>
-                    <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Assists</p><p id="mAssists" class="text-3xl font-black italic text-white">0</p></div>
-                    <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Saves</p><p id="mSaves" class="text-3xl font-black italic text-white">0</p></div>
-                    <div class="stat-badge p-5 rounded-3xl text-center border-blue-600/40 bg-blue-600/10"><p class="text-[9px] uppercase font-black text-blue-400 mb-1">MVP</p><p id="mMvps" class="text-3xl font-black italic text-blue-500">0</p></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 relative z-10">
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Goals</p><p id="mGoals" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Assists</p><p id="mAssists" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center"><p class="text-[8px] uppercase font-black text-white/30 mb-1">Saves</p><p id="mSaves" class="text-3xl font-black italic text-white">0</p></div>
+                    <div class="stat-badge p-4 rounded-2xl text-center border-blue-500/30 bg-blue-500/5"><p class="text-[8px] uppercase font-black text-blue-400 mb-1">MVP</p><p id="mMvps" class="text-3xl font-black italic text-blue-500">0</p></div>
                 </div>
-                <div class="space-y-4">
-                    <p class="text-[10px] uppercase tracking-[0.4em] text-white/30 font-black">Contract Biography</p>
-                    <div id="modalBio" class="text-gray-300 leading-relaxed text-sm h-32 overflow-y-auto pr-6 italic scrollbar-hide bg-black/20 p-6 rounded-3xl border border-white/5"></div>
+                <div class="relative z-10">
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-white/40 mb-3 font-black">Experience & Biography</p>
+                    <div id="modalBio" class="text-gray-300 leading-relaxed text-sm h-32 overflow-y-auto pr-4 italic bg-white/5 p-5 rounded-2xl border border-white/5 scrollbar-hide"></div>
                 </div>
-                <button onclick="closeBio()" class="mt-8 w-full bg-white text-black hover:bg-blue-600 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500">Back to Market</button>
+                <button onclick="closeBio()" class="mt-8 w-full bg-white text-black hover:bg-blue-600 hover:text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300">Return to Market</button>
             </div>
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto px-6 mt-20">
+    <div class="max-w-6xl mx-auto px-6">
         <% if (user) { %>
-            <div class="max-w-xl mx-auto bg-gradient-to-br from-white/10 to-transparent p-12 rounded-[50px] border border-white/10 text-center">
-                <h3 class="text-2xl font-black italic uppercase text-white mb-2">Authenticated: <span class="text-blue-500"><%= user.name %></span></h3>
-                <a href="/profile" class="block w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest mt-6">Access Player Dashboard</a>
+            <div class="max-w-xl mx-auto glass p-12 rounded-[40px] shadow-2xl border-white/10 text-center space-y-6">
+                <h3 class="text-2xl font-black italic uppercase text-white">Welcome Back! <span class="text-blue-500"><%= user.name %></span></h3>
+                <div class="pt-4 space-y-3">
+                    <a href="/profile" class="block w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg">Manage my Profile</a>
+                    <form action="/profile/delete" method="POST" onsubmit="return confirm('Withdraw your application from the market?')">
+                        <button type="submit" class="w-full bg-red-600/10 text-red-500 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-600 hover:text-white transition">Withdraw Application</button>
+                    </form>
+                </div>
             </div>
         <% } else { %>
-            <div class="grid md:grid-cols-1 max-w-2xl mx-auto gap-10">
-                <div id="registerBox" class="bg-white/5 p-12 rounded-[50px] border border-white/10">
-                    <h3 class="text-3xl font-black italic mb-8 uppercase text-white">Join the Market</h3>
-                    <form action="/register" method="POST" class="space-y-5">
-                        <div class="grid grid-cols-2 gap-5">
-                            <input name="name" placeholder="ROBLOX USERNAME" required class="form-input">
-                            <input name="discord" placeholder="DISCORD USERNAME" required class="form-input">
+            <div class="max-w-2xl mx-auto">
+                
+                <div id="registerBox" class="glass p-12 rounded-[40px] border-white/10">
+                    <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
+                    <form action="/register" method="POST" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input name="name" placeholder="Roblox User" required class="form-input">
+                            <input name="discord" placeholder="Discord User" required class="form-input">
                         </div>
-                        <textarea name="experience" placeholder="PLAYER BIOGRAPHY..." required class="form-input h-32"></textarea>
-                        <input type="password" name="password" placeholder="SECURE PASSWORD" required class="form-input">
-                        <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-black text-[11px] uppercase">Submit Contract</button>
+                        <div class="grid grid-cols-3 gap-4">
+                            <select name="position" required class="form-input">
+                                <option value="" disabled selected>POSITION</option>
+                                <option value="FWD">FORWARD</option>
+                                <option value="MID">MIDFIELD</option>
+                                <option value="DEF">DEFENSE</option>
+                                <option value="GK">GOALKEEPER</option>
+                            </select>
+                            <input name="country" placeholder="Country" required class="form-input">
+                            <input name="timezone" placeholder="Timezone (e.g. GMT+5)" required class="form-input">
+                        </div>
+                        <textarea name="experience" placeholder="Tell us about your past experience / Bio..." required class="form-input h-24"></textarea>
+                        <input type="password" name="password" placeholder="Create Password" required class="form-input">
+                        <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white transition">SUBMIT CONTRACT</button>
                     </form>
-                    <button onclick="toggleAuth()" class="mt-6 text-[10px] font-black uppercase text-white/30">Switch to Login</button>
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Already have an account? Login</button>
+                    </div>
                 </div>
-                <div id="loginBox" class="bg-white/5 p-12 rounded-[50px] border border-white/10 hidden-form">
-                    <h3 class="text-3xl font-black italic mb-8 uppercase text-blue-500">Player Portal</h3>
+
+                <div id="loginBox" class="glass p-12 rounded-[40px] border-white/10 hidden-form">
+                    <h3 class="text-2xl font-black italic mb-8 uppercase text-blue-500">Player Login</h3>
                     <form action="/login" method="POST" class="space-y-6">
-                        <input name="username" placeholder="ROBLOX USERNAME" required class="form-input">
-                        <input type="password" name="password" placeholder="ACCOUNT PASSWORD" required class="form-input">
-                        <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-[11px] uppercase">Authorize Access</button>
+                        <input name="username" placeholder="Roblox Username" required class="form-input">
+                        <input type="password" name="password" placeholder="Password" required class="form-input">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-500 transition shadow-lg">AUTHORIZE</button>
                     </form>
-                    <button onclick="toggleAuth()" class="mt-6 text-[10px] font-black uppercase text-white/30">Need a Listing? Register</button>
+                    <div class="mt-6 text-center">
+                        <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Need a contract? Register Here</button>
+                    </div>
                 </div>
+
             </div>
         <% } %>
     </div>
 </main>
 
 <script>
+    // FORM TOGGLE LOGIC
     function toggleAuth() {
         const reg = document.getElementById('registerBox');
         const log = document.getElementById('loginBox');
@@ -253,6 +251,7 @@
         log.classList.toggle('hidden-form');
     }
 
+    // PRESERVED ANIMATIONS AND LOGIC
     function tiltCard(e, el) {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -261,34 +260,45 @@
         const yc = rect.height / 2;
         const dx = (x - xc) / xc;
         const dy = (y - yc) / yc;
-        el.style.transform = `rotateY(${dx * 20}deg) rotateX(${-dy * 20}deg) scale(1.05)`;
+        el.style.transform = `rotateY(${dx * 15}deg) rotateX(${-dy * 15}deg) scale(1.05)`;
     }
 
     function resetTilt(el) {
         el.style.transform = `rotateY(0deg) rotateX(0deg) scale(1)`;
     }
 
-    async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz, rating) {
+    async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz) {
         el.classList.add('card-active-anim');
+        
+        // Populate static modal info first
         document.getElementById('modalName').innerText = name;
+        document.getElementById('modalImg').src = img;
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
-        document.getElementById('modalRating').innerText = rating;
-        document.getElementById('modalImg').src = img;
+        
+        // UPDATED: Mapping the specific position, country, and timezone
         document.getElementById('modalPosBadge').innerText = pos || 'PLAYER';
-        document.getElementById('modalTZ').innerText = "LOCATION: " + (country || 'N/A') + " | " + (tz || 'UTC');
+        document.getElementById('modalCountryBadge').innerText = country || 'UNKNOWN';
+        document.getElementById('modalTZ').innerText = "TIMEZONE: " + (tz || 'N/A');
+        
         document.getElementById('mGoals').innerText = g;
         document.getElementById('mAssists').innerText = a;
         document.getElementById('mSaves').innerText = s;
         document.getElementById('mMvps').innerText = m;
         document.getElementById('modalViews').innerText = currentViews;
-        
+
+        // Async view count update
         try {
-            const res = await fetch(`/market/view/${encodeURIComponent(name)}`, { method: 'POST' });
-            const data = await res.json();
-            if(data.success) document.getElementById('modalViews').innerText = data.count;
-        } catch(e) {}
+            const response = await fetch(`/market/view/${name}`, { method: 'POST' });
+            const data = await response.json();
+            if(data.success) {
+                document.getElementById('modalViews').innerText = data.count;
+            }
+        } catch(e) {
+            console.error("View count update failed", e);
+        }
         
+        // Trigger modal display with preserved timings
         setTimeout(() => {
             const modal = document.getElementById('bioModal');
             const container = document.getElementById('modalContainer');
@@ -298,7 +308,7 @@
                 container.classList.add('show');
                 el.classList.remove('card-active-anim');
             }, 50);
-        }, 300);
+        }, 400);
     }
 
     function closeBio() { 
@@ -309,3 +319,4 @@
         setTimeout(() => { modal.style.display = 'none'; }, 400);
     }
 </script>
+
