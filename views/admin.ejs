@@ -267,7 +267,7 @@
                                         <input type="hidden" name="playerId" value="<%= player.id %>">
                                         <div class="space-y-3">
                                             <label class="text-[11px] font-black uppercase text-white tracking-widest">Market Card Image URL</label>
-                                            <input name="cardImage" required placeholder="Paste Custom Card URL" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500 shadow-inner">
+                                            <input name="cardImage" placeholder="Paste Custom Card URL" class="w-full bg-black border border-white/10 p-4 rounded-2xl text-white text-xs outline-none focus:border-blue-500 shadow-inner">
                                         </div>
                                         <button type="submit" class="w-full bg-green-600 hover:bg-green-500 py-5 rounded-xl text-xs font-black uppercase text-white transition shadow-lg shadow-green-600/20">Approve & Publish Card</button>
                                     </form>
@@ -417,7 +417,7 @@
                             </div>
                             <div>
                                 <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Market Card URL</label>
-                                <input name="cardImage" value="<%= player.cardImage %>" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none focus:border-blue-500">
+                                <input name="cardImage" value="<%= player.cardImage %>" placeholder="Leave empty for Roblox headshot" class="w-full bg-white/5 border border-white/10 p-3 rounded-xl text-white text-xs outline-none focus:border-blue-500">
                             </div>
                             <div>
                                 <label class="text-[9px] font-black uppercase text-white/40 mb-2 block">Player Bio</label>
@@ -499,3 +499,4 @@
         container.insertAdjacentHTML('beforeend', html);
     }
 </script>
+
