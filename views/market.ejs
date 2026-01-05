@@ -1,8 +1,9 @@
 <%- include('partials/navbar') %>
 
 <style>
+    /* SLOWED DOWN CONVEYOR */
     @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .animate-conveyor { display: flex; animation: scroll 30s linear infinite; width: max-content; }
+    .animate-conveyor { display: flex; animation: scroll 60s linear infinite; width: max-content; }
     .animate-conveyor:hover { animation-play-state: paused; }
     
     /* LEVITATION EFFECT */
@@ -13,13 +14,18 @@
 
     /* 3D TILT & GLOW EFFECT */
     .player-card { 
-        transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
+        transition: transform 0.1s ease-out, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.5s ease, scale 0.5s ease;
         cursor: pointer; 
         position: relative;
         overflow: hidden;
         transform-style: preserve-3d;
         perspective: 1000px;
         animation: levitate 4s ease-in-out infinite;
+    }
+
+    /* Hide filtered cards smoothly */
+    .player-card.filtered-out {
+        display: none !important;
     }
     
     .player-card:hover { 
@@ -50,7 +56,6 @@
         opacity: 0.6;
     }
 
-    /* Grayscale Logic */
     .card-img {
         filter: grayscale(100%);
         transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease;
@@ -60,7 +65,6 @@
         transform: scale(1.05);
     }
 
-    /* SLEEK CLICK ANIMATION */
     .card-active-anim {
         animation: sleekClick 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         pointer-events: none;
@@ -70,6 +74,25 @@
         0% { transform: scale(1); box-shadow: 0 0 0 rgba(59, 130, 246, 0); }
         50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); }
         100% { transform: scale(1.02); opacity: 0.8; }
+    }
+
+    /* SEARCH & FILTER STYLES */
+    .market-filter-btn {
+        padding: 8px 16px;
+        border-radius: 99px;
+        font-size: 10px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.5);
+    }
+    .market-filter-btn.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
     }
 
     /* FIFA STYLE MODAL */
@@ -110,7 +133,6 @@
     .form-input:focus { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); }
     select.form-input option { background: #0a0a0a; color: white; }
 
-    /* TOGGLE CLASSES */
     .hidden-form { display: none !important; }
 </style>
 
@@ -121,19 +143,31 @@
 <% } %>
 
 <main class="py-20 overflow-hidden">
-    <div class="max-w-7xl mx-auto px-6 mb-12 flex justify-between items-end">
+    <div class="max-w-7xl mx-auto px-6 mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
         <div>
             <h2 class="text-5xl font-black italic uppercase tracking-tighter text-blue-500">PLAYER MARKET</h2>
             <p class="text-[10px] text-white/40 font-bold uppercase tracking-[0.3em]">VIM Super League Official Market</p>
         </div>
-        <div class="bg-blue-600/10 border border-blue-500/20 px-4 py-2 rounded-full">
-            <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest">● Online Players: <%= players.length %></span>
+
+        <div class="flex flex-col items-end gap-4">
+            <div class="relative w-full md:w-80">
+                <input type="text" id="marketSearch" oninput="filterMarket()" placeholder="SEARCH PLAYER NAME..." 
+                       class="w-full bg-white/5 border border-white/10 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest outline-none focus:border-blue-500 transition">
+                <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="setFilter('ALL', this)" class="market-filter-btn active">ALL</button>
+                <button onclick="setFilter('FWD', this)" class="market-filter-btn">FWD</button>
+                <button onclick="setFilter('MID', this)" class="market-filter-btn">MID</button>
+                <button onclick="setFilter('DEF', this)" class="market-filter-btn">DEF</button>
+                <button onclick="setFilter('GK', this)" class="market-filter-btn">GK</button>
+            </div>
         </div>
     </div>
 
     <% if(players.length > 0) { %>
         <div class="relative flex items-center mb-32 border-y border-white/5 py-12">
-            <div class="animate-conveyor gap-10 px-4">
+            <div class="animate-conveyor gap-10 px-4" id="conveyorBelt">
                 <% let displayList = players.length < 5 ? [...players, ...players, ...players, ...players] : [...players, ...players]; %>
                 <% displayList.forEach(p => { 
                     let posClass = 'pos-pro';
@@ -143,6 +177,8 @@
                     if(p.position === 'GK') posClass = 'pos-gk';
                 %>
                     <div class="player-card <%= posClass %> w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
+                         data-name="<%= p.name.toLowerCase() %>"
+                         data-pos="<%= p.position %>"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
                          onclick="openBio(this, '<%= p.name %>', '<%= p.cardImage %>', `<%= p.experience || p.bio %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>')">
@@ -236,7 +272,6 @@
             </div>
         <% } else { %>
             <div class="max-w-2xl mx-auto">
-                
                 <div id="registerBox" class="glass p-12 rounded-[40px] border-white/10">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-white">Register as Player</h3>
                     <form action="/register" method="POST" class="space-y-4">
@@ -263,7 +298,6 @@
                         <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Already have an account? Login</button>
                     </div>
                 </div>
-
                 <div id="loginBox" class="glass p-12 rounded-[40px] border-white/10 hidden-form">
                     <h3 class="text-2xl font-black italic mb-8 uppercase text-blue-500">Player Login</h3>
                     <form action="/login" method="POST" class="space-y-6">
@@ -275,13 +309,47 @@
                         <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition underline underline-offset-4">Need a contract? Register Here</button>
                     </div>
                 </div>
-
             </div>
         <% } %>
     </div>
 </main>
 
 <script>
+    let currentFilter = 'ALL';
+
+    // LIVE SEARCH & FILTER LOGIC
+    function setFilter(pos, btn) {
+        document.querySelectorAll('.market-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = pos;
+        filterMarket();
+    }
+
+    function filterMarket() {
+        const searchTerm = document.getElementById('marketSearch').value.toLowerCase();
+        const cards = document.querySelectorAll('.player-card');
+        
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const pos = card.getAttribute('data-pos');
+            
+            const matchesSearch = name.includes(searchTerm);
+            const matchesFilter = (currentFilter === 'ALL' || pos === currentFilter);
+            
+            if (matchesSearch && matchesFilter) {
+                card.classList.remove('filtered-out');
+            } else {
+                card.classList.add('filtered-out');
+            }
+        });
+
+        // RESTART CONVEYOR IF FILTERED
+        const conveyor = document.getElementById('conveyorBelt');
+        conveyor.style.animation = 'none';
+        conveyor.offsetHeight; /* trigger reflow */
+        conveyor.style.animation = null;
+    }
+
     // FORM TOGGLE LOGIC
     function toggleAuth() {
         const reg = document.getElementById('registerBox');
@@ -290,7 +358,6 @@
         log.classList.toggle('hidden-form');
     }
 
-    // PRESERVED ANIMATIONS AND LOGIC
     function tiltCard(e, el) {
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -309,7 +376,6 @@
     async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz) {
         el.classList.add('card-active-anim');
         
-        // MODAL POSITION THEMING
         const colors = { 'FWD': '#ef4444', 'MID': '#f59e0b', 'DEF': '#10b981', 'GK': '#06b6d4', 'PRO': '#3b82f6' };
         const activeColor = colors[pos] || colors['PRO'];
         
