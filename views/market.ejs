@@ -29,7 +29,17 @@
         animation-play-state: paused;
     }
 
-    /* CIRCLE HEADSHOT STYLING */
+    /* CUSTOM IMAGE CARD (Full cover) */
+    .custom-card-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    /* CIRCLE HEADSHOT FALLBACK STYLING */
     .headshot-container {
         position: relative;
         width: 110px;
@@ -105,6 +115,7 @@
         background: #3b82f6;
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4);
+        z-index: 5;
     }
 </style>
 
@@ -140,46 +151,49 @@
                     <div class="player-card w-[260px] h-[360px] rounded-[35px] flex-shrink-0 relative group flex flex-col items-center"
                          onmousemove="tiltCard(event, this)" 
                          onmouseleave="resetTilt(this)"
-                         onclick="openBio(this, '<%= cleanName %>', '<%= robloxHeadshot %>', `<%= (p.experience || p.bio || 'No bio provided.').replace(/`/g, '\\`') %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>', '<%= rating %>')">
+                         onclick="openBio(this, '<%= cleanName %>', '<%= p.imageUrl || robloxHeadshot %>', `<%= (p.experience || p.bio || 'No bio provided.').replace(/`/g, '\\`') %>`, '<%= p.discord %>', '<%= p.goals || 0 %>', '<%= p.assists || 0 %>', '<%= p.saves || 0 %>', '<%= p.mvps || 0 %>', '<%= p.views ? p.views.length : 0 %>', '<%= p.position %>', '<%= p.country %>', '<%= p.timezone %>', '<%= rating %>')">
                         
-                        <div class="absolute top-6 left-6 z-10">
-                            <div class="rating-badge w-11 h-11 rounded-full flex items-center justify-center border border-white/20">
-                                <span class="text-white font-black text-xl italic"><%= rating %></span>
+                        <% if (p.imageUrl) { %>
+                            <img src="<%= p.imageUrl %>" class="custom-card-img" alt="Custom Card">
+                        <% } else { %>
+                            <div class="absolute top-6 left-6 z-10">
+                                <div class="rating-badge w-11 h-11 rounded-full flex items-center justify-center border border-white/20">
+                                    <span class="text-white font-black text-xl italic"><%= rating %></span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="absolute top-20 left-7 opacity-20 group-hover:opacity-100 transition-opacity">
-                            <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest" style="writing-mode: vertical-rl;"><%= p.position || 'MID' %></p>
-                        </div>
+                            <div class="absolute top-20 left-7 opacity-20 group-hover:opacity-100 transition-opacity">
+                                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest" style="writing-mode: vertical-rl;"><%= p.position || 'MID' %></p>
+                            </div>
 
-                        <div class="headshot-container">
-                            <img src="<%= robloxHeadshot %>" 
-                                 class="headshot-circle object-cover" 
-                                 loading="lazy"
-                                 onerror="this.src='https://www.roblox.com/headshot-thumbnail/image?userName=Roblox&width=150&height=150&format=png'">
-                        </div>
+                            <div class="headshot-container">
+                                <img src="<%= robloxHeadshot %>" 
+                                     class="headshot-circle object-cover" 
+                                     loading="lazy"
+                                     onerror="this.src='https://www.roblox.com/headshot-thumbnail/image?userName=Roblox&width=150&height=150&format=png'">
+                            </div>
 
-                        <div class="text-center mt-6 px-4">
-                            <span class="text-[9px] font-black text-blue-500/60 uppercase tracking-[0.3em] mb-1 block"><%= p.country || 'GLOBAL' %></span>
-                            <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white leading-tight group-hover:text-blue-400 transition-colors"><%= cleanName %></h3>
-                        </div>
+                            <div class="text-center mt-6 px-4">
+                                <span class="text-[9px] font-black text-blue-500/60 uppercase tracking-[0.3em] mb-1 block"><%= p.country || 'GLOBAL' %></span>
+                                <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white leading-tight group-hover:text-blue-400 transition-colors"><%= cleanName %></h3>
+                            </div>
 
-                        <div class="mt-auto mb-8 flex gap-4 opacity-40 group-hover:opacity-100 transition-all transform group-hover:translate-y-[-5px]">
-                             <div class="text-center">
-                                <p class="text-[8px] font-black text-white/50 uppercase">G</p>
-                                <p class="text-xs font-bold text-white"><%= p.goals || 0 %></p>
-                             </div>
-                             <div class="text-center">
-                                <p class="text-[8px] font-black text-white/50 uppercase">A</p>
-                                <p class="text-xs font-bold text-white"><%= p.assists || 0 %></p>
-                             </div>
-                             <div class="text-center">
-                                <p class="text-[8px] font-black text-white/50 uppercase">MVP</p>
-                                <p class="text-xs font-bold text-blue-500"><%= p.mvps || 0 %></p>
-                             </div>
-                        </div>
-
-                        <div class="absolute bottom-4 text-[7px] text-white/20 font-black uppercase tracking-[0.5em]">CLICK TO VIEW BIO</div>
+                            <div class="mt-auto mb-8 flex gap-4 opacity-40 group-hover:opacity-100 transition-all transform group-hover:translate-y-[-5px]">
+                                 <div class="text-center">
+                                    <p class="text-[8px] font-black text-white/50 uppercase">G</p>
+                                    <p class="text-xs font-bold text-white"><%= p.goals || 0 %></p>
+                                 </div>
+                                 <div class="text-center">
+                                    <p class="text-[8px] font-black text-white/50 uppercase">A</p>
+                                    <p class="text-xs font-bold text-white"><%= p.assists || 0 %></p>
+                                 </div>
+                                 <div class="text-center">
+                                    <p class="text-[8px] font-black text-white/50 uppercase">MVP</p>
+                                    <p class="text-xs font-bold text-blue-500"><%= p.mvps || 0 %></p>
+                                 </div>
+                            </div>
+                            <div class="absolute bottom-4 text-[7px] text-white/20 font-black uppercase tracking-[0.5em] z-10">CLICK TO VIEW BIO</div>
+                        <% } %>
                     </div>
                 <% }) %>
             </div>
@@ -188,21 +202,17 @@
 
     <div id="bioModal" class="modal" onclick="closeBio()">
         <div class="max-w-4xl w-full flex flex-col md:flex-row gap-8 items-stretch relative p-4" id="modalContainer" onclick="event.stopPropagation()">
-            
             <div class="md:w-1/3 bg-[#0a0f1e] rounded-[40px] border border-white/10 p-8 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
                 <div class="absolute top-[-20%] right-[-20%] w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full"></div>
-                
                 <div class="relative z-10 w-32 h-32 rounded-full border-4 border-blue-600 p-2 mb-6">
                     <img id="modalImg" src="" class="w-full h-full rounded-full object-cover shadow-2xl">
                 </div>
-                
                 <div class="relative z-10 text-center">
                     <div id="modalRating" class="text-5xl font-black italic text-blue-500 mb-2">60</div>
                     <h2 id="modalName" class="text-3xl font-black italic uppercase text-white tracking-tighter mb-4"></h2>
                     <div id="modalPosBadge" class="inline-block bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full italic uppercase tracking-widest"></div>
                 </div>
             </div>
-
             <div class="flex-1 bg-white/5 backdrop-blur-3xl p-10 rounded-[40px] border border-white/10 shadow-2xl relative">
                 <div class="flex justify-between items-start mb-10">
                     <div>
@@ -214,19 +224,16 @@
                         <p class="text-[8px] uppercase font-black text-blue-500 tracking-[0.2em] mt-1">TOTAL VIEWS</p>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                     <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Goals</p><p id="mGoals" class="text-3xl font-black italic text-white">0</p></div>
                     <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Assists</p><p id="mAssists" class="text-3xl font-black italic text-white">0</p></div>
                     <div class="stat-badge p-5 rounded-3xl text-center"><p class="text-[9px] uppercase font-black text-white/30 mb-1">Saves</p><p id="mSaves" class="text-3xl font-black italic text-white">0</p></div>
                     <div class="stat-badge p-5 rounded-3xl text-center border-blue-600/40 bg-blue-600/10"><p class="text-[9px] uppercase font-black text-blue-400 mb-1">MVP</p><p id="mMvps" class="text-3xl font-black italic text-blue-500">0</p></div>
                 </div>
-
                 <div class="space-y-4">
                     <p class="text-[10px] uppercase tracking-[0.4em] text-white/30 font-black">Contract Biography</p>
                     <div id="modalBio" class="text-gray-300 leading-relaxed text-sm h-32 overflow-y-auto pr-6 italic scrollbar-hide bg-black/20 p-6 rounded-3xl border border-white/5"></div>
                 </div>
-
                 <button onclick="closeBio()" class="mt-8 w-full bg-white text-black hover:bg-blue-600 hover:text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-500">Back to Market</button>
             </div>
         </div>
@@ -275,7 +282,6 @@
                         <button onclick="toggleAuth()" class="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 hover:text-blue-500 transition underline underline-offset-8">Switch to Portal Login</button>
                     </div>
                 </div>
-
                 <div id="loginBox" class="bg-white/5 p-12 rounded-[50px] border border-white/10 hidden-form">
                     <h3 class="text-3xl font-black italic mb-8 uppercase text-blue-500 tracking-tighter">PLAYER PORTAL</h3>
                     <form action="/login" method="POST" class="space-y-6">
@@ -317,29 +323,23 @@
 
     async function openBio(el, name, img, bio, discord, g, a, s, m, currentViews, pos, country, tz, rating) {
         el.classList.add('card-active-anim');
-        
         document.getElementById('modalName').innerText = name;
         document.getElementById('modalBio').innerText = bio;
         document.getElementById('modalDiscord').innerText = "@" + discord;
         document.getElementById('modalRating').innerText = rating;
         document.getElementById('modalImg').src = img;
-        
         document.getElementById('modalPosBadge').innerText = pos || 'PLAYER';
         document.getElementById('modalTZ').innerText = "LOCATION: " + (country || 'N/A') + " | " + (tz || 'UTC');
-        
         document.getElementById('mGoals').innerText = g;
         document.getElementById('mAssists').innerText = a;
         document.getElementById('mSaves').innerText = s;
         document.getElementById('mMvps').innerText = m;
         document.getElementById('modalViews').innerText = currentViews;
-
-        // AJAX View Increment
         try {
             const res = await fetch(`/market/view/${encodeURIComponent(name)}`, { method: 'POST' });
             const data = await res.json();
             if(data.success) document.getElementById('modalViews').innerText = data.count;
         } catch(e) {}
-        
         setTimeout(() => {
             const modal = document.getElementById('bioModal');
             const container = document.getElementById('modalContainer');
