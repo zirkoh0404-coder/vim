@@ -93,37 +93,75 @@
     /* TOGGLE CLASSES */
     .hidden-form { display: none !important; }
 
-    /* FALLBACK SPECIFIC STYLES */
+    /* REWORKED FALLBACK STYLES */
     .fallback-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         height: 100%;
-        background: linear-gradient(to bottom, #1e3a8a, #000);
+        background: radial-gradient(circle at center, #1e40af 0%, #000 100%);
         position: relative;
+        overflow: hidden;
     }
+
+    /* Perfect Centering Logic */
+    .headshot-wrapper {
+        position: absolute;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .fallback-headshot {
-        width: 130px;
-        height: 130px;
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
-        border: 4px solid #3b82f6;
+        border: 3px solid rgba(59, 130, 246, 0.6);
         object-fit: cover;
-        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
         background: #000;
         z-index: 2;
+        padding: 4px;
+    }
+
+    .card-footer-info {
+        position: absolute;
+        bottom: 70px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        z-index: 10;
+    }
+
+    .pill-detail {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2px 10px;
+        border-radius: 100px;
+        font-size: 8px;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
     }
 
     /* RATING BADGE STYLE */
     .rating-badge {
         position: absolute;
-        top: 25px;
-        left: 25px;
+        top: 20px;
+        left: 20px;
         text-align: center;
-        z-index: 10;
+        z-index: 20;
     }
-    .rating-value { font-size: 32px; font-weight: 900; color: white; line-height: 1; font-style: italic; }
-    .rating-label { font-size: 10px; font-weight: 900; color: #3b82f6; text-transform: uppercase; margin-top: -2px; }
+    .rating-value { font-size: 36px; font-weight: 900; color: white; line-height: 1; font-style: italic; letter-spacing: -2px; }
+    .rating-label { font-size: 11px; font-weight: 900; color: #3b82f6; text-transform: uppercase; margin-top: -4px; }
 </style>
 
 <% if (typeof error !== 'undefined' && error) { %>
@@ -147,7 +185,6 @@
         <div class="relative flex items-center mb-32 border-y border-white/5 py-12">
             <div class="animate-conveyor gap-10 px-4">
                 <% 
-                    // To prevent "forever loading" or memory issues, we cap the duplication
                     let displayList = players;
                     if (players.length > 0 && players.length < 20) {
                         displayList = [...players, ...players, ...players, ...players];
@@ -155,7 +192,6 @@
                 %>
                 <% displayList.forEach((p, index) => { 
                     const hasValidCard = p.cardImage && p.cardImage !== '' && p.cardImage !== 'none';
-                    // FIXED: Using the primary Avatar Headshot endpoint which is much more stable
                     const robloxThumb = `https://www.roblox.com/headshot-thumbnail/image?userName=${encodeURIComponent(p.name)}&width=150&height=150&format=png`;
                 %>
                     <div class="player-card w-[260px] h-[360px] glass rounded-[30px] overflow-hidden flex-shrink-0 relative group"
@@ -174,24 +210,28 @@
                             <img src="<%= p.cardImage %>" class="card-img w-full h-full object-cover">
                         <% } else { %>
                             <div class="fallback-container">
-                                <img src="<%= robloxThumb %>" 
-                                     class="fallback-headshot" 
-                                     onerror="this.onerror=null;this.src='https://www.roblox.com/headshot-thumbnail/image?userName=Roblox&width=150&height=150&format=png';">
-                                <div class="mt-4 text-center z-10">
-                                    <span class="text-blue-500 font-black text-[10px] uppercase tracking-widest"><%= p.country || 'Global' %></span>
-                                    <h3 class="text-white font-black text-2xl italic uppercase mt-1"><%= p.name %></h3>
+                                <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/world-map.png'); background-size: cover;"></div>
+                                
+                                <div class="headshot-wrapper">
+                                    <img src="<%= robloxThumb %>" 
+                                         class="fallback-headshot" 
+                                         onerror="this.onerror=null;this.src='https://www.roblox.com/headshot-thumbnail/image?userName=Roblox&width=150&height=150&format=png';">
+                                </div>
+
+                                <div class="card-footer-info">
+                                    <div class="flex gap-1">
+                                        <span class="pill-detail"><%= p.country || 'Global' %></span>
+                                        <span class="pill-detail"><%= p.timezone || 'UTC' %></span>
+                                    </div>
+                                    <h3 class="text-white font-black text-2xl italic uppercase tracking-tighter"><%= p.name %></h3>
                                 </div>
                             </div>
                         <% } %>
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
-                            <div class="flex justify-between items-start">
-                                <h3 class="font-black text-2xl italic uppercase tracking-tighter text-white"><%= p.name %></h3>
-                                <span class="bg-blue-600 text-white text-[8px] font-black px-2 py-1 rounded-md italic uppercase"><%= p.position || 'N/A' %></span>
-                            </div>
-                            <div class="flex justify-between items-center mt-1">
-                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">View Profile</p>
-                                <div class="flex items-center gap-1 bg-black/40 px-2 py-0.5 rounded-md">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent p-6 flex flex-col justify-end">
+                            <div class="flex justify-between items-end border-t border-white/10 pt-4">
+                                <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">VIEW STATS</p>
+                                <div class="flex items-center gap-1 bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 rounded-md">
                                     <span class="text-[9px] text-white font-black"><%= p.views ? p.views.length : 0 %></span>
                                 </div>
                             </div>
