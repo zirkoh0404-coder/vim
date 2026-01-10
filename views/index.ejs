@@ -1,218 +1,233 @@
 <%- include('partials/navbar') %>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;700;900&display=swap');
-
-    body { 
-        background-color: #050505; 
-        color: #fff; 
-        font-family: 'Inter', sans-serif; 
-        overflow-x: hidden; 
-        letter-spacing: -0.01em;
-    }
-
-    .font-sports { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; }
-
-    .bento-card { 
-        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+    body { background-color: #030303; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    
+    .glass-card { 
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 1.5rem;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        overflow: hidden;
+        border-radius: 2rem;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
-    .bento-card:hover {
-        border-color: rgba(59, 130, 246, 0.3);
-        background: rgba(255, 255, 255, 0.04);
-        transform: translateY(-2px);
+    .glass-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(59, 130, 246, 0.4);
+        transform: translateY(-5px);
     }
 
-    .pro-label {
+    .fifa-label {
         background: #3b82f6;
         color: white;
-        padding: 4px 10px;
-        font-size: 9px;
+        padding: 4px 12px;
+        font-size: 10px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 0.15em;
-        border-radius: 3px;
+        letter-spacing: 2px;
+        border-radius: 4px;
+        display: inline-block;
     }
 
-    .bg-mesh {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
-                    radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
-        z-index: -1; pointer-events: none;
+    .bg-glow {
+        position: fixed; width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+        top: -100px; right: -100px; z-index: -1; pointer-events: none;
     }
-
-    /* Custom scroll for professional feel */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
 </style>
 
-<div class="bg-mesh"></div>
+<div class="bg-glow"></div>
 
-<main class="relative pt-28 pb-32 px-6 max-w-[1400px] mx-auto">
+<main class="relative pt-24 pb-32 px-6">
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
-        
-        <div class="lg:col-span-8 relative group overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/5 h-[500px]">
-            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105 opacity-40">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-            <div class="absolute bottom-12 left-12 right-12">
-                <span class="pro-label mb-6 inline-block">Headlines</span>
-                <h1 class="text-6xl md:text-8xl font-sports italic leading-[0.9] tracking-tighter mb-6">
-                    DOMINATE THE <br><span class="text-blue-500 text-glow">ARENA.</span>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+        <div class="lg:col-span-8 group relative overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/5 aspect-video lg:aspect-auto">
+            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105 opacity-60">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            <div class="absolute bottom-10 left-10 right-10">
+                <span class="fifa-label mb-4">Official Announcement</span>
+                <h1 class="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none mb-4">
+                    YOU CHOOSE <span class="text-blue-500">US!</span>
                 </h1>
-                <p class="text-white/40 text-sm uppercase tracking-[0.3em] max-w-xl font-medium">Professional League Management & Recruitment Hub</p>
+                <p class="text-white/60 text-sm uppercase tracking-widest max-w-xl">A new standard of leagues is here. Join the elite competition today.</p>
             </div>
         </div>
 
         <div class="lg:col-span-4 grid grid-rows-2 gap-6">
-            <div class="bento-card p-8 flex flex-col justify-between border-l-4 border-blue-600">
-                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Next Scheduled Event</p>
+            <div class="glass-card p-8 flex flex-col justify-center relative overflow-hidden border-l-4 border-blue-600">
+                <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest block mb-4">Next Match</span>
                 <% let nextMatch = matches.find(m => m.status === 'upcoming'); %>
                 <% if(nextMatch) { %>
-                    <div class="flex items-center gap-4 py-4">
-                        <img src="<%= nextMatch.logoA %>" class="w-14 h-14 object-contain filter drop-shadow-xl">
-                        <span class="font-sports text-xl text-white/10 italic">VS</span>
-                        <img src="<%= nextMatch.logoB %>" class="w-14 h-14 object-contain filter drop-shadow-xl">
+                    <div class="flex items-center gap-6 mb-4">
+                        <img src="<%= nextMatch.logoA %>" class="w-12 h-12 object-contain">
+                        <span class="italic font-black text-2xl text-white/20">VS</span>
+                        <img src="<%= nextMatch.logoB %>" class="w-12 h-12 object-contain">
                     </div>
-                    <h3 class="text-4xl font-sports italic"><%= nextMatch.time %></h3>
+                    <h3 class="text-4xl font-black italic uppercase tracking-tighter"><%= nextMatch.time %></h3>
                 <% } else { %>
-                    <h3 class="text-xl font-sports opacity-20 italic">No Games Scheduled</h3>
+                    <h3 class="text-2xl font-black italic uppercase opacity-20">No Upcoming Games</h3>
                 <% } %>
             </div>
 
-            <div class="bento-card p-2 bg-black border-none relative group">
+            <div class="glass-card p-2 flex flex-col relative overflow-hidden bg-black">
                 <% if(liveLink && liveLink.trim() !== "") { %>
                     <% 
                         let embedLink = liveLink;
                         if (liveLink.includes('watch?v=')) { embedLink = liveLink.replace('watch?v=', 'embed/').split('&')[0]; }
                         else if (liveLink.includes('youtu.be/')) { embedLink = liveLink.replace('youtu.be/', 'youtube.com/embed/').split('?')[0]; }
                     %>
-                    <iframe class="w-full h-full rounded-[1.2rem] opacity-80 group-hover:opacity-100 transition" src="<%= embedLink %>" frameborder="0" allowfullscreen></iframe>
+                    <iframe class="w-full h-full rounded-[1.5rem]" src="<%= embedLink %>" frameborder="0" allowfullscreen></iframe>
                 <% } else { %>
-                    <div class="h-full flex flex-col items-center justify-center opacity-30">
-                        <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse mb-2"></div>
-                        <span class="text-[10px] font-black uppercase tracking-widest">Broadcast Offline</span>
+                    <div class="flex-1 flex flex-col items-center justify-center opacity-20">
+                        <h3 class="text-xl font-black italic uppercase tracking-tighter italic">Broadcast Offline</h3>
                     </div>
                 <% } %>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24">
-        <div class="bento-card p-8 group">
-            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Total Talent</span>
-            <div class="flex items-end justify-between">
-                <h4 class="text-5xl font-sports italic text-white group-hover:text-blue-500 transition"><%= players.length %></h4>
-                <span class="text-[10px] font-black opacity-10 uppercase">Agents</span>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-24">
+        <div class="glass-card p-10 flex items-center justify-between group">
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mb-2">Registered Agents</p>
+                <h4 class="text-white font-black text-6xl tracking-tighter group-hover:text-blue-500 transition-all"><%= players.length %></h4>
             </div>
+            <div class="text-6xl opacity-5 italic font-black">AGENTS</div>
         </div>
-        <div class="bento-card p-8 group">
-            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Active Fixtures</span>
-            <div class="flex items-end justify-between">
-                <h4 class="text-5xl font-sports italic text-white group-hover:text-blue-500 transition"><%= matches.length %></h4>
-                <span class="text-[10px] font-black opacity-10 uppercase">Matches</span>
+        <div class="glass-card p-10 flex items-center justify-between group border-blue-600/20">
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mb-2">Scheduled Fixtures</p>
+                <h4 class="text-white font-black text-6xl tracking-tighter group-hover:text-blue-500 transition-all"><%= matches.length %></h4>
             </div>
-        </div>
-        <div class="bento-card p-8 bg-blue-600/5 border-blue-600/20">
-            <span class="text-[9px] uppercase tracking-widest text-blue-400 font-black mb-2 block">Season Status</span>
-            <h4 class="text-2xl font-sports italic">REGISTRATION OPEN</h4>
-        </div>
-        <div class="bento-card p-8">
-            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Server Status</span>
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                <h4 class="text-xs font-black italic uppercase">Operational</h4>
-            </div>
+            <div class="text-6xl opacity-5 italic font-black">GAMES</div>
         </div>
     </div>
 
-    <div class="mb-24">
-        <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
-            <h2 class="text-2xl font-sports italic"><span class="text-blue-500">Latest</span> Results</h2>
-            <a href="/matches" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition">View Full Archive →</a>
+    <div class="max-w-7xl mx-auto mb-24">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <span class="fifa-label mb-2">Flash Scores</span>
+                <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white">Recent Match Results</h2>
+            </div>
+            <a href="/matches" class="text-[10px] font-black text-blue-500 uppercase tracking-widest border-b border-blue-500/30 pb-1">View All Results</a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <% let recentResults = matches.filter(m => m.status === 'completed').reverse().slice(0, 4); %>
             <% if(recentResults.length > 0) { %>
                 <% recentResults.forEach(r => { %>
-                    <div class="bento-card p-6 border-white/10 hover:bg-white/[0.04]">
+                    <a href="/match/<%= r.id %>" class="glass-card p-6 border border-white/5 hover:border-blue-500/40 group">
                         <div class="flex justify-between items-center mb-6">
-                            <span class="text-[8px] font-black text-blue-500 uppercase bg-blue-500/10 px-2 py-1 rounded italic">Final Score</span>
-                            <span class="text-[8px] opacity-30 font-bold"><%= r.time %></span>
+                            <span class="text-[9px] font-black text-blue-500 uppercase bg-blue-500/10 px-3 py-1 rounded-full italic">Full Time</span>
+                            <span class="text-[9px] opacity-30 font-bold tracking-tighter"><%= r.time %></span>
                         </div>
                         <div class="space-y-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold uppercase text-white/60"><%= r.teamA %></span>
-                                <span class="text-2xl font-sports italic <%= r.details.goalsA > r.details.goalsB ? 'text-blue-500' : 'text-white' %>"><%= r.details.goalsA %></span>
+                                <div class="flex items-center gap-3">
+                                    <img src="<%= r.logoA %>" class="w-6 h-6 object-contain">
+                                    <span class="text-sm font-black italic uppercase tracking-tight"><%= r.teamA %></span>
+                                </div>
+                                <span class="text-xl font-black italic text-white"><%= r.details.goalsA %></span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-xs font-bold uppercase text-white/60"><%= r.teamB %></span>
-                                <span class="text-2xl font-sports italic <%= r.details.goalsB > r.details.goalsA ? 'text-blue-500' : 'text-white' %>"><%= r.details.goalsB %></span>
+                                <div class="flex items-center gap-3">
+                                    <img src="<%= r.logoB %>" class="w-6 h-6 object-contain">
+                                    <span class="text-sm font-black italic uppercase tracking-tight text-white/60"><%= r.teamB %></span>
+                                </div>
+                                <span class="text-xl font-black italic text-white/60"><%= r.details.goalsB %></span>
                             </div>
                         </div>
+                    </a>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full py-12 glass-card text-center opacity-20 italic text-sm uppercase font-bold tracking-[0.5em]">No recent results recorded</div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto mb-24">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <span class="fifa-label mb-2">VIM Daily</span>
+                <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white">Top Stories</h2>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
+                <% stories.slice().reverse().forEach(story => { %>
+                    <div class="group cursor-pointer">
+                        <div class="rounded-[2rem] overflow-hidden aspect-video mb-6 border border-white/10 relative">
+                            <img src="<%= story.image %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-70">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
+                        </div>
+                        <h4 class="font-black italic uppercase text-xl group-hover:text-blue-500 transition-colors tracking-tight"><%= story.title %></h4>
+                        <p class="text-xs text-white/40 font-medium leading-relaxed mt-2"><%= story.description %></p>
+                        <p class="text-[10px] opacity-40 font-bold uppercase tracking-widest mt-2">League News • <%= story.date || 'Just Now' %></p>
                     </div>
                 <% }) %>
             <% } else { %>
-                <div class="col-span-full py-12 text-center opacity-10 font-sports text-xl uppercase italic">Waiting for results...</div>
+                <div class="col-span-full py-12 glass-card text-center opacity-20 italic text-sm uppercase font-bold tracking-[0.5em]">No stories published yet</div>
             <% } %>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-32">
-        <div class="lg:col-span-1">
-            <span class="pro-label mb-4">The Feed</span>
-            <h2 class="text-5xl font-sports italic leading-none mb-6">INSIDE <br>THE <span class="text-blue-500">LEAGUE.</span></h2>
-            <p class="text-sm text-white/40 leading-relaxed font-medium">The latest transfers, team updates, and community news from the VIM Hub.</p>
+    <div class="max-w-7xl mx-auto mb-32">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <h2 class="text-xl font-black italic uppercase tracking-tighter opacity-60">Live Market Activity</h2>
         </div>
-        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
-                <% stories.slice().reverse().slice(0, 2).forEach(story => { %>
-                    <div class="group cursor-pointer">
-                        <div class="rounded-[1.5rem] overflow-hidden aspect-video mb-6 border border-white/5 relative bg-zinc-900">
-                            <img src="<%= story.image %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                        </div>
-                        <h4 class="font-sports italic text-xl group-hover:text-blue-500 transition mb-2"><%= story.title %></h4>
-                        <p class="text-xs text-white/40 font-medium leading-relaxed line-clamp-2"><%= story.description %></p>
-                    </div>
-                <% }) %>
-            <% } %>
-        </div>
-    </div>
-
-    <div class="bento-card p-10 border-dashed border-white/10 bg-transparent mb-40">
-        <div class="flex items-center gap-4 mb-10">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
-            <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Market Intelligence Stream</h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-12">
-            <% let recentPlayers = players.slice(-6).reverse(); %>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% 
+                let recentPlayers = players.slice(-6).reverse(); 
+                let dialogues = ["has joined the crew!", "just entered the market.", "is ready for recruitment!", "signed a pro contract!", "has arrived at the VIM Hub.", "is looking for a team!"];
+            %>
             <% recentPlayers.forEach((player, index) => { %>
-                <div class="flex items-start gap-4">
-                    <span class="text-blue-500 font-sports text-xs mt-1">0<%= index + 1 %></span>
+                <% let randomDialogue = dialogues[index % dialogues.length]; %>
+                <div class="glass-card p-4 flex items-center gap-4 border-l-2 border-blue-600/50">
+                    <div class="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center font-black italic text-blue-500 text-xs">
+                        <%= player.name.substring(0,2).toUpperCase() %>
+                    </div>
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-tight text-white/80"><%= player.name %></p>
-                        <p class="text-[9px] text-white/20 uppercase mt-1">Verified for Season Entry</p>
+                        <p class="text-xs font-bold tracking-tight">
+                            <span class="text-blue-500 uppercase"><%= player.name %></span> 
+                            <span class="opacity-50 font-medium"><%= randomDialogue %></span>
+                        </p>
+                        <p class="text-[8px] uppercase opacity-30 mt-1 font-black">Just Now</p>
                     </div>
                 </div>
             <% }) %>
         </div>
     </div>
 
-    <div class="text-center">
-        <h2 class="text-4xl font-sports italic mb-12 opacity-20 tracking-tighter italic">Elite Status Awaits</h2>
-        <a href="/market" class="group relative inline-flex items-center gap-6 bg-white text-black px-16 py-6 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:bg-blue-600 hover:text-white active:scale-95">
-            Access The Hub
-            <span class="text-xl">→</span>
-        </a>
+    <div class="max-w-7xl mx-auto px-10 mb-40">
+        <div class="text-center mb-20">
+            <h2 class="text-5xl font-black italic uppercase mb-4">The Road to the <span class="text-blue-500">Super League</span></h2>
+            <div class="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
+            <div class="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -z-10"></div>
+            <div class="flex flex-col items-center text-center group">
+                <div class="w-20 h-20 rounded-2xl glass-card flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">01</div>
+                <h3 class="font-black italic uppercase text-lg mb-3">Recruitment</h3>
+                <p class="text-sm opacity-40 max-w-[250px]">Join our Discord and show your highlight reels to scouts.</p>
+            </div>
+            <div class="flex flex-col items-center text-center group">
+                <div class="w-20 h-20 rounded-2xl glass-card border-blue-600/40 flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">02</div>
+                <h3 class="font-black italic uppercase text-lg mb-3 text-blue-500">The Market</h3>
+                <p class="text-sm opacity-40 max-w-[250px]">Negotiate contracts with team managers.</p>
+            </div>
+            <div class="flex flex-col items-center text-center group">
+                <div class="w-20 h-20 rounded-2xl glass-card flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">03</div>
+                <h3 class="font-black italic uppercase text-lg mb-3">Championship</h3>
+                <p class="text-sm opacity-40 max-w-[250px]">Compete for the VIM Title.</p>
+            </div>
+        </div>
     </div>
 
+    <div class="text-center">
+        <a href="/market" class="group relative inline-flex items-center gap-4 bg-white text-black px-12 py-6 rounded-full font-black text-xs uppercase tracking-[0.3em] transition-all hover:pr-16 active:scale-95">
+            Enter the Hub
+            <span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-all text-xl">→</span>
+        </a>
+    </div>
 </main>
-
-<%- include('partials/footer') %>
