@@ -1,221 +1,216 @@
 <%- include('partials/navbar') %>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;700;900&display=swap');
 
     body { 
         background-color: #050505; 
         color: #fff; 
-        font-family: 'Outfit', sans-serif; 
+        font-family: 'Inter', sans-serif; 
         overflow-x: hidden; 
+        letter-spacing: -0.01em;
     }
 
-    /* Professional Branding Fonts */
-    .font-heading { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; letter-spacing: -0.02em; }
-    
-    /* Luxury Glass Effect */
-    .pro-card {
-        background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-        backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.05);
+    .font-sports { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; }
+
+    .bento-card { 
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 1.5rem;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
     }
 
-    .pro-card:hover {
+    .bento-card:hover {
         border-color: rgba(59, 130, 246, 0.3);
-        background: rgba(255,255,255,0.04);
-        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.04);
+        transform: translateY(-2px);
     }
 
-    /* Sports Label */
-    .tag-pro {
+    .pro-label {
         background: #3b82f6;
-        color: #fff;
+        color: white;
         padding: 4px 10px;
         font-size: 9px;
         font-weight: 900;
         text-transform: uppercase;
         letter-spacing: 0.15em;
-        border-radius: 2px;
+        border-radius: 3px;
     }
 
-    /* Hero Mesh Gradient */
-    .mesh-bg {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: 
-            radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
-        z-index: -1;
-        pointer-events: none;
+    .bg-mesh {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+        z-index: -1; pointer-events: none;
     }
 
-    /* Custom Scrollbar for Pro Look */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #050505; }
-    ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 10px; }
+    /* Custom scroll for professional feel */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
 </style>
 
-<div class="mesh-bg"></div>
+<div class="bg-mesh"></div>
 
-<main class="relative pt-28 pb-32 px-6 max-w-[1600px] mx-auto">
+<main class="relative pt-28 pb-32 px-6 max-w-[1400px] mx-auto">
     
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-20">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
         
-        <div class="lg:col-span-7 relative group overflow-hidden rounded-[2.5rem] border border-white/5 h-[500px]">
-            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-110 opacity-50">
+        <div class="lg:col-span-8 relative group overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/5 h-[500px]">
+            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105 opacity-40">
             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
-            
             <div class="absolute bottom-12 left-12 right-12">
-                <div class="flex items-center gap-3 mb-6">
-                    <span class="tag-pro">Featured</span>
-                    <span class="h-[1px] w-12 bg-white/20"></span>
-                    <span class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Season 2024</span>
-                </div>
-                <h1 class="text-6xl md:text-8xl font-heading leading-[0.9] mb-6 italic">
-                    REDEFINING <br> <span class="text-blue-500">EXCELLENCE.</span>
+                <span class="pro-label mb-6 inline-block">Headlines</span>
+                <h1 class="text-6xl md:text-8xl font-sports italic leading-[0.9] tracking-tighter mb-6">
+                    DOMINATE THE <br><span class="text-blue-500 text-glow">ARENA.</span>
                 </h1>
-                <p class="text-white/50 text-base max-w-lg font-light leading-relaxed">The hub for elite players and professional management. Your journey to the Super League starts here.</p>
+                <p class="text-white/40 text-sm uppercase tracking-[0.3em] max-w-xl font-medium">Professional League Management & Recruitment Hub</p>
             </div>
         </div>
 
-        <div class="lg:col-span-5 grid grid-cols-1 gap-6">
-            <div class="pro-card p-10 flex flex-col justify-between border-r-4 border-blue-600 bg-blue-600/5">
-                <div>
-                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-8">Up Next / Broadcast</p>
-                    <% let nextMatch = matches.find(m => m.status === 'upcoming'); %>
-                    <% if(nextMatch) { %>
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col items-center gap-2">
-                                <img src="<%= nextMatch.logoA %>" class="w-16 h-16 object-contain drop-shadow-2xl">
-                                <span class="text-[10px] font-bold uppercase text-white/40"><%= nextMatch.teamA %></span>
-                            </div>
-                            <div class="text-center">
-                                <span class="text-4xl font-heading italic text-white/10">VS</span>
-                                <div class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mt-2 tracking-tighter"><%= nextMatch.time %></div>
-                            </div>
-                            <div class="flex flex-col items-center gap-2">
-                                <img src="<%= nextMatch.logoB %>" class="w-16 h-16 object-contain drop-shadow-2xl">
-                                <span class="text-[10px] font-bold uppercase text-white/40 text-right"><%= nextMatch.teamB %></span>
-                            </div>
-                        </div>
-                    <% } else { %>
-                        <h3 class="text-3xl font-heading italic opacity-10">No Scheduled Events</h3>
-                    <% } %>
-                </div>
-                
-                <div class="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
-                    <span class="flex items-center gap-2">
-                        <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
-                        <span class="text-[10px] font-black uppercase tracking-widest">Live Channel</span>
-                    </span>
-                    <a href="/broadcast" class="text-[10px] font-black text-blue-500 uppercase hover:text-white transition">Watch Stream →</a>
-                </div>
+        <div class="lg:col-span-4 grid grid-rows-2 gap-6">
+            <div class="bento-card p-8 flex flex-col justify-between border-l-4 border-blue-600">
+                <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Next Scheduled Event</p>
+                <% let nextMatch = matches.find(m => m.status === 'upcoming'); %>
+                <% if(nextMatch) { %>
+                    <div class="flex items-center gap-4 py-4">
+                        <img src="<%= nextMatch.logoA %>" class="w-14 h-14 object-contain filter drop-shadow-xl">
+                        <span class="font-sports text-xl text-white/10 italic">VS</span>
+                        <img src="<%= nextMatch.logoB %>" class="w-14 h-14 object-contain filter drop-shadow-xl">
+                    </div>
+                    <h3 class="text-4xl font-sports italic"><%= nextMatch.time %></h3>
+                <% } else { %>
+                    <h3 class="text-xl font-sports opacity-20 italic">No Games Scheduled</h3>
+                <% } %>
             </div>
 
-            <div class="grid grid-cols-2 gap-6">
-                <div class="pro-card p-8 flex flex-col justify-between">
-                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Agents</span>
-                    <h4 class="text-5xl font-heading italic"><%= players.length %></h4>
-                </div>
-                <div class="pro-card p-8 flex flex-col justify-between border-l-2 border-white/10">
-                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Fixtures</span>
-                    <h4 class="text-5xl font-heading italic"><%= matches.length %></h4>
-                </div>
+            <div class="bento-card p-2 bg-black border-none relative group">
+                <% if(liveLink && liveLink.trim() !== "") { %>
+                    <% 
+                        let embedLink = liveLink;
+                        if (liveLink.includes('watch?v=')) { embedLink = liveLink.replace('watch?v=', 'embed/').split('&')[0]; }
+                        else if (liveLink.includes('youtu.be/')) { embedLink = liveLink.replace('youtu.be/', 'youtube.com/embed/').split('?')[0]; }
+                    %>
+                    <iframe class="w-full h-full rounded-[1.2rem] opacity-80 group-hover:opacity-100 transition" src="<%= embedLink %>" frameborder="0" allowfullscreen></iframe>
+                <% } else { %>
+                    <div class="h-full flex flex-col items-center justify-center opacity-30">
+                        <div class="w-2 h-2 bg-red-600 rounded-full animate-pulse mb-2"></div>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Broadcast Offline</span>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
 
-    <div class="mb-32">
-        <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
-            <h2 class="text-2xl font-heading italic italic">Recent <span class="text-blue-500">Scorelines</span></h2>
-            <a href="/matches" class="text-[10px] font-black text-white/40 uppercase tracking-widest hover:text-blue-500 transition">Archives</a>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-24">
+        <div class="bento-card p-8 group">
+            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Total Talent</span>
+            <div class="flex items-end justify-between">
+                <h4 class="text-5xl font-sports italic text-white group-hover:text-blue-500 transition"><%= players.length %></h4>
+                <span class="text-[10px] font-black opacity-10 uppercase">Agents</span>
+            </div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="bento-card p-8 group">
+            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Active Fixtures</span>
+            <div class="flex items-end justify-between">
+                <h4 class="text-5xl font-sports italic text-white group-hover:text-blue-500 transition"><%= matches.length %></h4>
+                <span class="text-[10px] font-black opacity-10 uppercase">Matches</span>
+            </div>
+        </div>
+        <div class="bento-card p-8 bg-blue-600/5 border-blue-600/20">
+            <span class="text-[9px] uppercase tracking-widest text-blue-400 font-black mb-2 block">Season Status</span>
+            <h4 class="text-2xl font-sports italic">REGISTRATION OPEN</h4>
+        </div>
+        <div class="bento-card p-8">
+            <span class="text-[9px] uppercase tracking-widest opacity-40 font-bold mb-2 block">Server Status</span>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                <h4 class="text-xs font-black italic uppercase">Operational</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-24">
+        <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+            <h2 class="text-2xl font-sports italic"><span class="text-blue-500">Latest</span> Results</h2>
+            <a href="/matches" class="text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-blue-500 transition">View Full Archive →</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <% let recentResults = matches.filter(m => m.status === 'completed').reverse().slice(0, 4); %>
-            <% recentResults.forEach(r => { %>
-                <div class="pro-card p-6 group cursor-pointer hover:bg-white/[0.05]">
-                    <div class="flex justify-between items-center mb-6 opacity-40 group-hover:opacity-100 transition">
-                        <span class="text-[8px] font-black uppercase tracking-widest">Final</span>
-                        <span class="text-[8px] font-bold"><%= r.time %></span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase tracking-tight text-white/70"><%= r.teamA %></span>
-                            <span class="text-xl font-heading <%= r.details.goalsA > r.details.goalsB ? 'text-blue-500' : 'text-white/20' %>"><%= r.details.goalsA %></span>
+            <% if(recentResults.length > 0) { %>
+                <% recentResults.forEach(r => { %>
+                    <div class="bento-card p-6 border-white/10 hover:bg-white/[0.04]">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-[8px] font-black text-blue-500 uppercase bg-blue-500/10 px-2 py-1 rounded italic">Final Score</span>
+                            <span class="text-[8px] opacity-30 font-bold"><%= r.time %></span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase tracking-tight text-white/70"><%= r.teamB %></span>
-                            <span class="text-xl font-heading <%= r.details.goalsB > r.details.goalsA ? 'text-blue-500' : 'text-white/20' %>"><%= r.details.goalsB %></span>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold uppercase text-white/60"><%= r.teamA %></span>
+                                <span class="text-2xl font-sports italic <%= r.details.goalsA > r.details.goalsB ? 'text-blue-500' : 'text-white' %>"><%= r.details.goalsA %></span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-bold uppercase text-white/60"><%= r.teamB %></span>
+                                <span class="text-2xl font-sports italic <%= r.details.goalsB > r.details.goalsA ? 'text-blue-500' : 'text-white' %>"><%= r.details.goalsB %></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <% }) %>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full py-12 text-center opacity-10 font-sports text-xl uppercase italic">Waiting for results...</div>
+            <% } %>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-32">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-32">
         <div class="lg:col-span-1">
-            <span class="tag-pro mb-4">Journal</span>
-            <h2 class="text-4xl font-heading italic mb-6 leading-none">THE <br>LATEST <br><span class="text-blue-500">INTEL.</span></h2>
-            <p class="text-sm text-white/40 leading-relaxed">Daily updates from the frontlines of the VIM Hub recruitment and match results.</p>
+            <span class="pro-label mb-4">The Feed</span>
+            <h2 class="text-5xl font-sports italic leading-none mb-6">INSIDE <br>THE <span class="text-blue-500">LEAGUE.</span></h2>
+            <p class="text-sm text-white/40 leading-relaxed font-medium">The latest transfers, team updates, and community news from the VIM Hub.</p>
         </div>
-        
-        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-8">
             <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
                 <% stories.slice().reverse().slice(0, 2).forEach(story => { %>
-                    <div class="group">
-                        <div class="rounded-[2rem] overflow-hidden aspect-[16/9] mb-6 border border-white/5 relative bg-zinc-900">
+                    <div class="group cursor-pointer">
+                        <div class="rounded-[1.5rem] overflow-hidden aspect-video mb-6 border border-white/5 relative bg-zinc-900">
                             <img src="<%= story.image %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
                         </div>
-                        <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-3 block">Category: Official</span>
-                        <h4 class="font-heading text-xl mb-3 group-hover:text-blue-500 transition"><%= story.title %></h4>
-                        <p class="text-sm text-white/40 line-clamp-2"><%= story.description %></p>
+                        <h4 class="font-sports italic text-xl group-hover:text-blue-500 transition mb-2"><%= story.title %></h4>
+                        <p class="text-xs text-white/40 font-medium leading-relaxed line-clamp-2"><%= story.description %></p>
                     </div>
                 <% }) %>
             <% } %>
         </div>
     </div>
 
-    <div class="pro-card p-10 mb-32 border-dashed border-white/10 bg-transparent">
+    <div class="bento-card p-10 border-dashed border-white/10 bg-transparent mb-40">
         <div class="flex items-center gap-4 mb-10">
-            <span class="relative flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-            </span>
-            <h2 class="text-sm font-black uppercase tracking-[0.4em] text-white/50">Market Intelligence Stream</h2>
+            <div class="w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Market Intelligence Stream</h2>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-12">
-            <% players.slice(-6).reverse().forEach((player, index) => { %>
-                <div class="flex items-start gap-4 group">
-                    <span class="text-blue-500 font-heading text-xs mt-1">0<%= index + 1 %></span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-12">
+            <% let recentPlayers = players.slice(-6).reverse(); %>
+            <% recentPlayers.forEach((player, index) => { %>
+                <div class="flex items-start gap-4">
+                    <span class="text-blue-500 font-sports text-xs mt-1">0<%= index + 1 %></span>
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-tight group-hover:text-blue-400 transition cursor-default">
-                            <%= player.name %> <span class="text-white/20 font-medium">Synchronized to central database</span>
-                        </p>
-                        <p class="text-[8px] text-white/20 uppercase mt-1 font-black">Transmission Encrypted // Verified</p>
+                        <p class="text-xs font-bold uppercase tracking-tight text-white/80"><%= player.name %></p>
+                        <p class="text-[9px] text-white/20 uppercase mt-1">Verified for Season Entry</p>
                     </div>
                 </div>
             <% }) %>
         </div>
     </div>
 
-    <div class="relative py-20 rounded-[3rem] overflow-hidden text-center border border-white/5 bg-zinc-900/50">
-        <div class="relative z-10">
-            <h2 class="text-5xl md:text-7xl font-heading italic mb-10 leading-none">READY TO <br>CLAIM THE <span class="text-blue-500">THRONE?</span></h2>
-            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
-                <a href="/market" class="bg-blue-600 text-white px-12 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500">
-                    Explore Market
-                </a>
-                <a href="/join" class="border border-white/10 text-white px-12 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
-                    Agent Application
-                </a>
-            </div>
-        </div>
+    <div class="text-center">
+        <h2 class="text-4xl font-sports italic mb-12 opacity-20 tracking-tighter italic">Elite Status Awaits</h2>
+        <a href="/market" class="group relative inline-flex items-center gap-6 bg-white text-black px-16 py-6 rounded-full font-black text-xs uppercase tracking-[0.4em] transition-all hover:bg-blue-600 hover:text-white active:scale-95">
+            Access The Hub
+            <span class="text-xl">→</span>
+        </a>
     </div>
 
 </main>
