@@ -1,233 +1,223 @@
 <%- include('partials/navbar') %>
 
 <style>
-    body { background-color: #030303; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@300;400;700;900&display=swap');
+
+    body { 
+        background-color: #050505; 
+        color: #fff; 
+        font-family: 'Outfit', sans-serif; 
+        overflow-x: hidden; 
+    }
+
+    /* Professional Branding Fonts */
+    .font-heading { font-family: 'Archivo Black', sans-serif; text-transform: uppercase; letter-spacing: -0.02em; }
     
-    .glass-card { 
-        background: rgba(255, 255, 255, 0.02);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 2rem;
-        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    /* Luxury Glass Effect */
+    .pro-card {
+        background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.05);
+        border-radius: 1.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .glass-card:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(59, 130, 246, 0.4);
-        transform: translateY(-5px);
+    .pro-card:hover {
+        border-color: rgba(59, 130, 246, 0.3);
+        background: rgba(255,255,255,0.04);
+        transform: translateY(-4px);
     }
 
-    .fifa-label {
+    /* Sports Label */
+    .tag-pro {
         background: #3b82f6;
-        color: white;
-        padding: 4px 12px;
-        font-size: 10px;
+        color: #fff;
+        padding: 4px 10px;
+        font-size: 9px;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        border-radius: 4px;
-        display: inline-block;
+        letter-spacing: 0.15em;
+        border-radius: 2px;
     }
 
-    .bg-glow {
-        position: fixed; width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
-        top: -100px; right: -100px; z-index: -1; pointer-events: none;
+    /* Hero Mesh Gradient */
+    .mesh-bg {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: 
+            radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+            radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+        z-index: -1;
+        pointer-events: none;
     }
+
+    /* Custom Scrollbar for Pro Look */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050505; }
+    ::-webkit-scrollbar-thumb { background: #1e1e1e; border-radius: 10px; }
 </style>
 
-<div class="bg-glow"></div>
+<div class="mesh-bg"></div>
 
-<main class="relative pt-24 pb-32 px-6">
+<main class="relative pt-28 pb-32 px-6 max-w-[1600px] mx-auto">
     
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
-        <div class="lg:col-span-8 group relative overflow-hidden rounded-[2.5rem] bg-zinc-900 border border-white/5 aspect-video lg:aspect-auto">
-            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105 opacity-60">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-            <div class="absolute bottom-10 left-10 right-10">
-                <span class="fifa-label mb-4">Official Announcement</span>
-                <h1 class="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none mb-4">
-                    YOU CHOOSE <span class="text-blue-500">US!</span>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-20">
+        
+        <div class="lg:col-span-7 relative group overflow-hidden rounded-[2.5rem] border border-white/5 h-[500px]">
+            <img src="/images/vimgfx.png" class="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-110 opacity-50">
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+            
+            <div class="absolute bottom-12 left-12 right-12">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="tag-pro">Featured</span>
+                    <span class="h-[1px] w-12 bg-white/20"></span>
+                    <span class="text-[10px] uppercase tracking-widest text-white/40 font-bold">Season 2024</span>
+                </div>
+                <h1 class="text-6xl md:text-8xl font-heading leading-[0.9] mb-6 italic">
+                    REDEFINING <br> <span class="text-blue-500">EXCELLENCE.</span>
                 </h1>
-                <p class="text-white/60 text-sm uppercase tracking-widest max-w-xl">A new standard of leagues is here. Join the elite competition today.</p>
+                <p class="text-white/50 text-base max-w-lg font-light leading-relaxed">The hub for elite players and professional management. Your journey to the Super League starts here.</p>
             </div>
         </div>
 
-        <div class="lg:col-span-4 grid grid-rows-2 gap-6">
-            <div class="glass-card p-8 flex flex-col justify-center relative overflow-hidden border-l-4 border-blue-600">
-                <span class="text-[10px] font-black text-blue-500 uppercase tracking-widest block mb-4">Next Match</span>
-                <% let nextMatch = matches.find(m => m.status === 'upcoming'); %>
-                <% if(nextMatch) { %>
-                    <div class="flex items-center gap-6 mb-4">
-                        <img src="<%= nextMatch.logoA %>" class="w-12 h-12 object-contain">
-                        <span class="italic font-black text-2xl text-white/20">VS</span>
-                        <img src="<%= nextMatch.logoB %>" class="w-12 h-12 object-contain">
-                    </div>
-                    <h3 class="text-4xl font-black italic uppercase tracking-tighter"><%= nextMatch.time %></h3>
-                <% } else { %>
-                    <h3 class="text-2xl font-black italic uppercase opacity-20">No Upcoming Games</h3>
-                <% } %>
+        <div class="lg:col-span-5 grid grid-cols-1 gap-6">
+            <div class="pro-card p-10 flex flex-col justify-between border-r-4 border-blue-600 bg-blue-600/5">
+                <div>
+                    <p class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-8">Up Next / Broadcast</p>
+                    <% let nextMatch = matches.find(m => m.status === 'upcoming'); %>
+                    <% if(nextMatch) { %>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col items-center gap-2">
+                                <img src="<%= nextMatch.logoA %>" class="w-16 h-16 object-contain drop-shadow-2xl">
+                                <span class="text-[10px] font-bold uppercase text-white/40"><%= nextMatch.teamA %></span>
+                            </div>
+                            <div class="text-center">
+                                <span class="text-4xl font-heading italic text-white/10">VS</span>
+                                <div class="bg-blue-600 text-[10px] font-black px-4 py-1 rounded-full mt-2 tracking-tighter"><%= nextMatch.time %></div>
+                            </div>
+                            <div class="flex flex-col items-center gap-2">
+                                <img src="<%= nextMatch.logoB %>" class="w-16 h-16 object-contain drop-shadow-2xl">
+                                <span class="text-[10px] font-bold uppercase text-white/40 text-right"><%= nextMatch.teamB %></span>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <h3 class="text-3xl font-heading italic opacity-10">No Scheduled Events</h3>
+                    <% } %>
+                </div>
+                
+                <div class="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Live Channel</span>
+                    </span>
+                    <a href="/broadcast" class="text-[10px] font-black text-blue-500 uppercase hover:text-white transition">Watch Stream →</a>
+                </div>
             </div>
 
-            <div class="glass-card p-2 flex flex-col relative overflow-hidden bg-black">
-                <% if(liveLink && liveLink.trim() !== "") { %>
-                    <% 
-                        let embedLink = liveLink;
-                        if (liveLink.includes('watch?v=')) { embedLink = liveLink.replace('watch?v=', 'embed/').split('&')[0]; }
-                        else if (liveLink.includes('youtu.be/')) { embedLink = liveLink.replace('youtu.be/', 'youtube.com/embed/').split('?')[0]; }
-                    %>
-                    <iframe class="w-full h-full rounded-[1.5rem]" src="<%= embedLink %>" frameborder="0" allowfullscreen></iframe>
-                <% } else { %>
-                    <div class="flex-1 flex flex-col items-center justify-center opacity-20">
-                        <h3 class="text-xl font-black italic uppercase tracking-tighter italic">Broadcast Offline</h3>
-                    </div>
-                <% } %>
+            <div class="grid grid-cols-2 gap-6">
+                <div class="pro-card p-8 flex flex-col justify-between">
+                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Agents</span>
+                    <h4 class="text-5xl font-heading italic"><%= players.length %></h4>
+                </div>
+                <div class="pro-card p-8 flex flex-col justify-between border-l-2 border-white/10">
+                    <span class="text-[9px] font-bold text-white/30 uppercase tracking-widest">Fixtures</span>
+                    <h4 class="text-5xl font-heading italic"><%= matches.length %></h4>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-24">
-        <div class="glass-card p-10 flex items-center justify-between group">
-            <div>
-                <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mb-2">Registered Agents</p>
-                <h4 class="text-white font-black text-6xl tracking-tighter group-hover:text-blue-500 transition-all"><%= players.length %></h4>
-            </div>
-            <div class="text-6xl opacity-5 italic font-black">AGENTS</div>
+    <div class="mb-32">
+        <div class="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+            <h2 class="text-2xl font-heading italic italic">Recent <span class="text-blue-500">Scorelines</span></h2>
+            <a href="/matches" class="text-[10px] font-black text-white/40 uppercase tracking-widest hover:text-blue-500 transition">Archives</a>
         </div>
-        <div class="glass-card p-10 flex items-center justify-between group border-blue-600/20">
-            <div>
-                <p class="text-[10px] uppercase tracking-[0.4em] opacity-40 font-bold mb-2">Scheduled Fixtures</p>
-                <h4 class="text-white font-black text-6xl tracking-tighter group-hover:text-blue-500 transition-all"><%= matches.length %></h4>
-            </div>
-            <div class="text-6xl opacity-5 italic font-black">GAMES</div>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto mb-24">
-        <div class="flex justify-between items-end mb-8">
-            <div>
-                <span class="fifa-label mb-2">Flash Scores</span>
-                <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white">Recent Match Results</h2>
-            </div>
-            <a href="/matches" class="text-[10px] font-black text-blue-500 uppercase tracking-widest border-b border-blue-500/30 pb-1">View All Results</a>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <% let recentResults = matches.filter(m => m.status === 'completed').reverse().slice(0, 4); %>
-            <% if(recentResults.length > 0) { %>
-                <% recentResults.forEach(r => { %>
-                    <a href="/match/<%= r.id %>" class="glass-card p-6 border border-white/5 hover:border-blue-500/40 group">
-                        <div class="flex justify-between items-center mb-6">
-                            <span class="text-[9px] font-black text-blue-500 uppercase bg-blue-500/10 px-3 py-1 rounded-full italic">Full Time</span>
-                            <span class="text-[9px] opacity-30 font-bold tracking-tighter"><%= r.time %></span>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <img src="<%= r.logoA %>" class="w-6 h-6 object-contain">
-                                    <span class="text-sm font-black italic uppercase tracking-tight"><%= r.teamA %></span>
-                                </div>
-                                <span class="text-xl font-black italic text-white"><%= r.details.goalsA %></span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-3">
-                                    <img src="<%= r.logoB %>" class="w-6 h-6 object-contain">
-                                    <span class="text-sm font-black italic uppercase tracking-tight text-white/60"><%= r.teamB %></span>
-                                </div>
-                                <span class="text-xl font-black italic text-white/60"><%= r.details.goalsB %></span>
-                            </div>
-                        </div>
-                    </a>
-                <% }) %>
-            <% } else { %>
-                <div class="col-span-full py-12 glass-card text-center opacity-20 italic text-sm uppercase font-bold tracking-[0.5em]">No recent results recorded</div>
-            <% } %>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto mb-24">
-        <div class="flex justify-between items-end mb-10">
-            <div>
-                <span class="fifa-label mb-2">VIM Daily</span>
-                <h2 class="text-4xl font-black italic uppercase tracking-tighter text-white">Top Stories</h2>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
-                <% stories.slice().reverse().forEach(story => { %>
-                    <div class="group cursor-pointer">
-                        <div class="rounded-[2rem] overflow-hidden aspect-video mb-6 border border-white/10 relative">
-                            <img src="<%= story.image %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-70">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent"></div>
-                        </div>
-                        <h4 class="font-black italic uppercase text-xl group-hover:text-blue-500 transition-colors tracking-tight"><%= story.title %></h4>
-                        <p class="text-xs text-white/40 font-medium leading-relaxed mt-2"><%= story.description %></p>
-                        <p class="text-[10px] opacity-40 font-bold uppercase tracking-widest mt-2">League News • <%= story.date || 'Just Now' %></p>
+            <% recentResults.forEach(r => { %>
+                <div class="pro-card p-6 group cursor-pointer hover:bg-white/[0.05]">
+                    <div class="flex justify-between items-center mb-6 opacity-40 group-hover:opacity-100 transition">
+                        <span class="text-[8px] font-black uppercase tracking-widest">Final</span>
+                        <span class="text-[8px] font-bold"><%= r.time %></span>
                     </div>
-                <% }) %>
-            <% } else { %>
-                <div class="col-span-full py-12 glass-card text-center opacity-20 italic text-sm uppercase font-bold tracking-[0.5em]">No stories published yet</div>
-            <% } %>
-        </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto mb-32">
-        <div class="flex items-center gap-4 mb-8">
-            <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <h2 class="text-xl font-black italic uppercase tracking-tighter opacity-60">Live Market Activity</h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <% 
-                let recentPlayers = players.slice(-6).reverse(); 
-                let dialogues = ["has joined the crew!", "just entered the market.", "is ready for recruitment!", "signed a pro contract!", "has arrived at the VIM Hub.", "is looking for a team!"];
-            %>
-            <% recentPlayers.forEach((player, index) => { %>
-                <% let randomDialogue = dialogues[index % dialogues.length]; %>
-                <div class="glass-card p-4 flex items-center gap-4 border-l-2 border-blue-600/50">
-                    <div class="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center font-black italic text-blue-500 text-xs">
-                        <%= player.name.substring(0,2).toUpperCase() %>
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold tracking-tight">
-                            <span class="text-blue-500 uppercase"><%= player.name %></span> 
-                            <span class="opacity-50 font-medium"><%= randomDialogue %></span>
-                        </p>
-                        <p class="text-[8px] uppercase opacity-30 mt-1 font-black">Just Now</p>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-tight text-white/70"><%= r.teamA %></span>
+                            <span class="text-xl font-heading <%= r.details.goalsA > r.details.goalsB ? 'text-blue-500' : 'text-white/20' %>"><%= r.details.goalsA %></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-tight text-white/70"><%= r.teamB %></span>
+                            <span class="text-xl font-heading <%= r.details.goalsB > r.details.goalsA ? 'text-blue-500' : 'text-white/20' %>"><%= r.details.goalsB %></span>
+                        </div>
                     </div>
                 </div>
             <% }) %>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-10 mb-40">
-        <div class="text-center mb-20">
-            <h2 class="text-5xl font-black italic uppercase mb-4">The Road to the <span class="text-blue-500">Super League</span></h2>
-            <div class="w-24 h-1 bg-blue-600 mx-auto rounded-full"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-32">
+        <div class="lg:col-span-1">
+            <span class="tag-pro mb-4">Journal</span>
+            <h2 class="text-4xl font-heading italic mb-6 leading-none">THE <br>LATEST <br><span class="text-blue-500">INTEL.</span></h2>
+            <p class="text-sm text-white/40 leading-relaxed">Daily updates from the frontlines of the VIM Hub recruitment and match results.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-16 relative">
-            <div class="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-white/5 -z-10"></div>
-            <div class="flex flex-col items-center text-center group">
-                <div class="w-20 h-20 rounded-2xl glass-card flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">01</div>
-                <h3 class="font-black italic uppercase text-lg mb-3">Recruitment</h3>
-                <p class="text-sm opacity-40 max-w-[250px]">Join our Discord and show your highlight reels to scouts.</p>
-            </div>
-            <div class="flex flex-col items-center text-center group">
-                <div class="w-20 h-20 rounded-2xl glass-card border-blue-600/40 flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">02</div>
-                <h3 class="font-black italic uppercase text-lg mb-3 text-blue-500">The Market</h3>
-                <p class="text-sm opacity-40 max-w-[250px]">Negotiate contracts with team managers.</p>
-            </div>
-            <div class="flex flex-col items-center text-center group">
-                <div class="w-20 h-20 rounded-2xl glass-card flex items-center justify-center font-black text-2xl mb-8 group-hover:bg-blue-600 transition-all">03</div>
-                <h3 class="font-black italic uppercase text-lg mb-3">Championship</h3>
-                <p class="text-sm opacity-40 max-w-[250px]">Compete for the VIM Title.</p>
+        
+        <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <% if (typeof stories !== 'undefined' && stories.length > 0) { %>
+                <% stories.slice().reverse().slice(0, 2).forEach(story => { %>
+                    <div class="group">
+                        <div class="rounded-[2rem] overflow-hidden aspect-[16/9] mb-6 border border-white/5 relative bg-zinc-900">
+                            <img src="<%= story.image %>" class="w-full h-full object-cover group-hover:scale-105 transition duration-700 opacity-60">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                        </div>
+                        <span class="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-3 block">Category: Official</span>
+                        <h4 class="font-heading text-xl mb-3 group-hover:text-blue-500 transition"><%= story.title %></h4>
+                        <p class="text-sm text-white/40 line-clamp-2"><%= story.description %></p>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="pro-card p-10 mb-32 border-dashed border-white/10 bg-transparent">
+        <div class="flex items-center gap-4 mb-10">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+            </span>
+            <h2 class="text-sm font-black uppercase tracking-[0.4em] text-white/50">Market Intelligence Stream</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-12">
+            <% players.slice(-6).reverse().forEach((player, index) => { %>
+                <div class="flex items-start gap-4 group">
+                    <span class="text-blue-500 font-heading text-xs mt-1">0<%= index + 1 %></span>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-tight group-hover:text-blue-400 transition cursor-default">
+                            <%= player.name %> <span class="text-white/20 font-medium">Synchronized to central database</span>
+                        </p>
+                        <p class="text-[8px] text-white/20 uppercase mt-1 font-black">Transmission Encrypted // Verified</p>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <div class="relative py-20 rounded-[3rem] overflow-hidden text-center border border-white/5 bg-zinc-900/50">
+        <div class="relative z-10">
+            <h2 class="text-5xl md:text-7xl font-heading italic mb-10 leading-none">READY TO <br>CLAIM THE <span class="text-blue-500">THRONE?</span></h2>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+                <a href="/market" class="bg-blue-600 text-white px-12 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500">
+                    Explore Market
+                </a>
+                <a href="/join" class="border border-white/10 text-white px-12 py-5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+                    Agent Application
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="text-center">
-        <a href="/market" class="group relative inline-flex items-center gap-4 bg-white text-black px-12 py-6 rounded-full font-black text-xs uppercase tracking-[0.3em] transition-all hover:pr-16 active:scale-95">
-            Enter the Hub
-            <span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-all text-xl">→</span>
-        </a>
-    </div>
 </main>
+
+<%- include('partials/footer') %>
