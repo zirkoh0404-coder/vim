@@ -25,6 +25,7 @@ app.use(session({
 const ADMIN_KEY = "VIM-STAFF-2025"; 
 
 // --- MODELS ---
+// FIXED: Added position, country, timezone AND theme to the Schema
 const Player = mongoose.model('Player', new mongoose.Schema({
     name: String, 
     discord: String, 
@@ -38,7 +39,7 @@ const Player = mongoose.model('Player', new mongoose.Schema({
     position: { type: String, default: "FWD" },
     country: { type: String, default: "" },
     timezone: { type: String, default: "" },
-    theme: { type: String, default: "blue" },
+    theme: { type: String, default: "blue" }, // <--- NEW THEME FIELD
     experience: String, 
     bio: String, 
     views: [String]
@@ -73,38 +74,28 @@ async function getInfo() {
     return info;
 }
 
-// Global Middleware - FIXED: Added Fallbacks to prevent EJS Internal Errors
+// Global Middleware
 app.use(async (req, res, next) => {
     try {
         const info = await getInfo();
-        const players = await Player.find() || [];
-        const matches = await Match.find() || [];
-        const groups = await Group.find() || [];
+        const players = await Player.find();
         const user = req.session.playerId ? await Player.findById(req.session.playerId) : null;
         
         res.locals = { 
             ...res.locals, 
             players: players,
-            matches: matches,
-            groups: groups,
-            liveLink: info.liveLink || "",
-            leaderboards: info.leaderboards || { scorers: [], saves: [], assists: [] },
-            records: info.records || [],
-            stories: info.stories || [],
+            matches: await Match.find(),
+            groups: await Group.find(),
+            liveLink: info.liveLink,
+            leaderboards: info.leaderboards,
+            records: info.records,
+            stories: info.stories,
             isAdmin: req.session.isAdmin || false,
             user: user,
             page: "" 
         };
         next();
-    } catch (err) { 
-        console.error("Middleware Error:", err);
-        // Fallback locals to prevent crash
-        res.locals.players = [];
-        res.locals.matches = [];
-        res.locals.stories = [];
-        res.locals.liveLink = "";
-        next(); 
-    }
+    } catch (err) { next(err); }
 });
 
 // --- PAGES ---
@@ -160,6 +151,7 @@ app.post('/profile/update', async (req, res) => {
     } catch (err) { res.redirect('/profile?error=Update failed'); }
 });
 
+// --- NEW THEME UPDATE ROUTE ---
 app.post('/profile/update-theme', async (req, res) => {
     try {
         if (!req.session.playerId) return res.redirect('/market');
@@ -235,13 +227,24 @@ app.post('/admin/update-team', async (req, res) => {
     res.redirect('/admin');
 });
 
+// --- TEAM DETAILS PAGE ---
 app.get('/team/:groupId/:teamIndex', async (req, res) => {
     try {
         const { groupId, teamIndex } = req.params;
         const group = await Group.findById(groupId);
-        if (!group || !group.teams[teamIndex]) return res.redirect('/metrics?error=Team not found');
-        res.render('team-details', { team: group.teams[teamIndex], group, page: 'metrics' });
-    } catch (err) { res.redirect('/metrics'); }
+        if (!group || !group.teams[teamIndex]) {
+            return res.redirect('/metrics?error=Team not found');
+        }
+        const team = group.teams[teamIndex];
+        res.render('team-details', { 
+            team, 
+            group, 
+            page: 'metrics' 
+        });
+    } catch (err) {
+        console.error("Team Page Error:", err);
+        res.redirect('/metrics');
+    }
 });
 
 app.post('/admin/add-to-roster', async (req, res) => {
@@ -258,14 +261,19 @@ app.post('/admin/add-to-roster', async (req, res) => {
 
 app.post('/admin/delete-from-roster', async (req, res) => {
     if (!req.session.isAdmin) return res.redirect('/admin-login');
-    const { groupId, teamIndex, playerIndex } = req.body;
-    const group = await Group.findById(groupId);
-    if (group && group.teams[teamIndex]) {
-        group.teams[teamIndex].roster.splice(playerIndex, 1);
-        group.markModified(`teams.${teamIndex}.roster`);
-        await group.save();
+    try {
+        const { groupId, teamIndex, playerIndex } = req.body;
+        const group = await Group.findById(groupId);
+        if (group && group.teams[teamIndex] && group.teams[teamIndex].roster) {
+            group.teams[teamIndex].roster.splice(playerIndex, 1);
+            group.markModified(`teams.${teamIndex}.roster`);
+            await group.save();
+        }
+        res.redirect('/admin');
+    } catch (err) {
+        console.error("Roster Delete Error:", err);
+        res.redirect('/admin?error=RosterDeleteFailed');
     }
-    res.redirect('/admin');
 });
 
 app.post('/admin/add-story', async (req, res) => {
@@ -276,6 +284,7 @@ app.post('/admin/add-story', async (req, res) => {
 });
 
 app.post('/admin/add-record', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
     const info = await getInfo();
     info.records.push({ ...req.body, id: Date.now().toString() });
     await info.save();
@@ -293,25 +302,38 @@ app.post('/admin/update-stat', async (req, res) => {
     res.redirect('/admin');
 });
 
+// --- DELETE ROUTES ---
 app.post('/admin/delete-match', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
     await Match.findByIdAndDelete(req.body.matchId);
     res.redirect('/admin');
 });
 
 app.post('/admin/delete-player', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
     await Player.findByIdAndDelete(req.body.playerId);
     res.redirect('/admin');
 });
 
 app.post('/admin/delete-story', async (req, res) => {
-    const info = await getInfo();
-    info.stories.splice(req.body.storyIndex, 1);
-    info.markModified('stories');
-    await info.save();
-    res.redirect('/admin');
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    try {
+        const { storyIndex } = req.body;
+        const info = await getInfo();
+        if (info.stories && info.stories[storyIndex] !== undefined) {
+            info.stories.splice(storyIndex, 1);
+            info.markModified('stories');
+            await info.save();
+        }
+        res.redirect('/admin');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin?error=DeleteStoryFailed');
+    }
 });
 
 app.post('/admin/delete-record', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
     const info = await getInfo();
     info.records = info.records.filter(r => r.id != req.body.recordId);
     await info.save();
@@ -319,27 +341,41 @@ app.post('/admin/delete-record', async (req, res) => {
 });
 
 app.post('/admin/delete-stat', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    const { type, index } = req.body;
     const info = await getInfo();
-    info.leaderboards[req.body.type].splice(req.body.index, 1);
-    info.markModified('leaderboards');
-    await info.save();
+    if (info.leaderboards[type]) {
+        info.leaderboards[type].splice(index, 1);
+        info.markModified('leaderboards');
+        await info.save();
+    }
     res.redirect('/admin');
 });
 
 app.post('/admin/delete-team', async (req, res) => {
-    const group = await Group.findById(req.body.groupId);
-    if (group) { group.teams.splice(req.body.teamIndex, 1); await group.save(); }
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
+    const { groupId, teamIndex } = req.body;
+    const group = await Group.findById(groupId);
+    if (group && group.teams[teamIndex]) {
+        group.teams.splice(teamIndex, 1);
+        await group.save();
+    }
     res.redirect('/admin');
 });
 
 app.post('/admin/delete-group', async (req, res) => {
+    if (!req.session.isAdmin) return res.redirect('/admin-login');
     await Group.findByIdAndDelete(req.body.groupId);
     res.redirect('/admin');
 });
 
+// --- ADMIN LOGIN ---
 app.post('/admin-login', (req, res) => {
-    if (req.body.password === ADMIN_KEY) { req.session.isAdmin = true; res.redirect('/admin'); }
-    else { res.render('admin-login', { error: "WRONG KEY!", page: 'admin' }); }
+    if (req.body.password === ADMIN_KEY) {
+        req.session.isAdmin = true;
+        res.redirect('/admin');
+    } else { res.render('admin-login', { error: "WRONG KEY!", page: 'admin' }); }
 });
 
 app.listen(process.env.PORT || 3000, () => console.log("VIM Hub Active"));
+
